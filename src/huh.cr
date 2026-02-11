@@ -22,8 +22,12 @@ end
 
 # Load core components
 require "./huh/field"
+require "./huh/accessor"
+require "./huh/selector"
+require "./huh/eval"
 require "./huh/form"
 require "./huh/fields/input"
+require "./huh/fields/confirm"
 
 # Extend module with factory functions
 module Huh
@@ -38,5 +42,9 @@ module Huh
 
   def self.new_input : Input
     Input.new
+  end
+
+  def self.new_confirm : Confirm
+    Confirm.new
   end
 end
