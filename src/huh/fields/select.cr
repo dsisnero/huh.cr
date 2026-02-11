@@ -55,6 +55,11 @@ module Huh
       @error
     end
 
+    # Value getter (returns current value from accessor)
+    def get_value : T
+      @accessor.get
+    end
+
     # Creates a new select field.
     def initialize
       # Initialize with default embedded accessor (zero value)
@@ -86,6 +91,7 @@ module Huh
     # Value sets the value of the select field using a cell
     def value(cell : Cell(T)) : self
       @accessor = PointerAccessor(T).new(cell)
+      @value = @accessor.get
       select_value(@accessor.get)
       update_value
       self
@@ -94,6 +100,7 @@ module Huh
     # Accessor sets the accessor of the select field
     def accessor(accessor : Accessor(T)) : self
       @accessor = accessor
+      @value = @accessor.get
       select_value(@accessor.get)
       update_value
       self
@@ -109,6 +116,7 @@ module Huh
     # Title sets the title of the select field.
     def title(title : String) : self
       @title_eval.value = title
+      @title = title
       self
     end
 
@@ -121,6 +129,7 @@ module Huh
     # Description sets the description of the select field.
     def description(description : String) : self
       @description_eval.value = description
+      @description = description
       self
     end
 

@@ -49,7 +49,7 @@ module Huh
     Confirm.new
   end
 
-  def self.new_select : Select(T) forall T
+  def self.new_select(type : T.class) : Select(T) forall T
     Select(T).new
   end
 end
