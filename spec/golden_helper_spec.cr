@@ -11,7 +11,7 @@ module GoldenHelper
   # Compare actual output with golden file
   def self.compare(actual : String, golden_filename : String) : Bool
     expected = read_golden(golden_filename)
-    
+
     if actual == expected
       true
     else
@@ -21,7 +21,7 @@ module GoldenHelper
       puts expected.inspect
       puts "\nActual (#{actual.bytesize} bytes):"
       puts actual.inspect
-      
+
       # Show character-by-character comparison for small strings
       if expected.size < 100 && actual.size < 100
         puts "\nCharacter comparison:"
@@ -38,7 +38,7 @@ module GoldenHelper
           end
         end
       end
-      
+
       false
     end
   end

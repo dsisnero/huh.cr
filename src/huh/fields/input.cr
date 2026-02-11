@@ -19,13 +19,13 @@ module Huh
     # Create a new Input field
     def initialize(value : String = "")
       super(value)
-      
+
       # Initialize Term2 TextInput component
       @textinput = Term2::Components::TextInput.new
-      
+
       # Set initial value
       @textinput.value = value
-      
+
       # Default validation (always passes)
       @validate = Proc(String, Exception | Nil).new { nil }
     end

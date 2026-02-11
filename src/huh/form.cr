@@ -42,7 +42,7 @@ module Huh
 
       # Add border similar to Go's default theme
       # This is a minimal implementation to match golden files
-      "┃ #{group_view.lines.map { |line| line.lstrip }.join("\n┃ ")}\n\nenter submit"
+      "┃ #{group_view.lines.map(&.lstrip).join("\n┃ ")}\n\nenter submit"
     end
 
     # Fluent configuration
