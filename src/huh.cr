@@ -28,6 +28,7 @@ require "./huh/eval"
 require "./huh/form"
 require "./huh/fields/input"
 require "./huh/fields/confirm"
+require "./huh/fields/select"
 
 # Extend module with factory functions
 module Huh
@@ -46,5 +47,9 @@ module Huh
 
   def self.new_confirm : Confirm
     Confirm.new
+  end
+
+  def self.new_select : Select(T) forall T
+    Select(T).new
   end
 end
