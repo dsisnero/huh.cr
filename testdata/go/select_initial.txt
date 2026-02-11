@@ -1,0 +1,6 @@
+┃ Choose a color                                                                
+┃ > Red                                                                         
+┃   Green                                                                       
+┃   Blue                                                                        
+
+↑ up • ↓ down • / filter • enter submit

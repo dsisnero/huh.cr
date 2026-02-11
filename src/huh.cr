@@ -1,6 +1,42 @@
-# TODO: Write documentation for `Huh`
+require "term2"
+require "lipgloss"
+
+# Crystal port of charmbracelet/huh
+# A simple, powerful library for building interactive forms and prompts in the terminal.
 module Huh
   VERSION = "0.1.0"
 
-  # TODO: Put your code here
+  # Include term2 and lipgloss for terminal UI
+  include Term2::Prelude
+  alias Cmd = Term2::Cmd
+  alias Cmds = Term2::Cmds
+  alias Model = Term2::Model
+  alias Msg = Term2::Msg
+  alias KeyMsg = Term2::KeyMsg
+  alias WindowSizeMsg = Term2::WindowSizeMsg
+
+  # Re-export lipgloss for styling
+  alias Style = Lipgloss::Style
+  alias Color = Lipgloss::Color
+end
+
+# Load core components
+require "./huh/field"
+require "./huh/form"
+require "./huh/fields/input"
+
+# Extend module with factory functions
+module Huh
+  # Factory functions
+  def self.new_form(*groups : Group) : Form
+    Form.new(*groups)
+  end
+
+  def self.new_group(*fields : FieldBase) : Group
+    Group.new(*fields)
+  end
+
+  def self.new_input : Input
+    Input.new
+  end
 end
