@@ -318,7 +318,7 @@ module Huh
       # Map cursor style (use focused cursor style for both states)
       # Extract color from cursor style's foreground if possible
       cursor_style = focused_styles.text_input.cursor
-      cursor_color = cursor_style.foreground # returns Lipgloss::Color?
+      cursor_color = cursor_style.foreground_color # returns Lipgloss::Color?
       input_styles.cursor.color = cursor_color
       # Shape defaults to Block
       input_styles.cursor.shape = Term2::CursorShape::Block

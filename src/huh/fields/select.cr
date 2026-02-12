@@ -1,8 +1,10 @@
 require "../option"
 require "../eval"
+require "../utils"
 require "term2/components/viewport"
 require "term2/components/spinner"
 require "term2/components/text_input"
+require "lipgloss"
 
 module Huh
   # Select is a select field.
@@ -291,9 +293,10 @@ module Huh
     end
 
     def view : String
+      styles = active_styles
       update_viewport_height
-      options = options_view
-      @viewport.content = options
+      vpc = options_view
+      @viewport.content = vpc
 
       parts = [] of String
       title = title_view
@@ -301,7 +304,11 @@ module Huh
       description = description_view
       parts << description unless description.empty?
       parts << @viewport.view.content
-      parts.join("\n")
+
+      styles.base
+        .width(@width)
+        .height(@height)
+        .render(parts.join("\n"))
     end
 
     def blur : Term2::Cmd
@@ -397,22 +404,60 @@ module Huh
     end
 
     private def title_view : String
-      title = if @filtering
-                @filter.view.content
-              elsif !@filter.value.empty? && !@inline
-                "/" + @filter.value
-              else
-                @title_eval.value
-              end
-      if @error
-        title + " [!]"
+      styles = active_styles
+      max_width = @width - styles.base.horizontal_frame_size
+      sb = String::Builder.new
+
+      if @filtering
+        # Apply styles to filter text input
+        apply_filter_styles
+        sb << @filter.view.content
+      elsif !@filter.value.empty? && !@inline
+        sb << styles.description.render("/" + @filter.value)
       else
-        title
+        sb << styles.title.render(Huh.wrap(@title_eval.value, max_width))
       end
+
+      if @error
+        sb << styles.error_indicator.render("")
+      end
+
+      sb.to_s
+    end
+
+    # Apply theme styles to the filter text input component
+    private def apply_filter_styles
+      theme = @theme || Theme.default
+      focused_styles = theme.focused
+      blurred_styles = theme.blurred
+      input_styles = Term2::Components::TextInput::Styles.new
+
+      # Map focused styles
+      input_styles.focused.text = focused_styles.text_input.text
+      input_styles.focused.placeholder = focused_styles.text_input.placeholder
+      input_styles.focused.prompt = focused_styles.text_input.prompt
+      input_styles.focused.suggestion = focused_styles.text_input.text
+
+      # Map blurred styles
+      input_styles.blurred.text = blurred_styles.text_input.text
+      input_styles.blurred.placeholder = blurred_styles.text_input.placeholder
+      input_styles.blurred.prompt = blurred_styles.text_input.prompt
+      input_styles.blurred.suggestion = blurred_styles.text_input.text
+
+      # Map cursor style
+      cursor_style = focused_styles.text_input.cursor
+      cursor_color = cursor_style.foreground
+      input_styles.cursor.color = cursor_color
+      input_styles.cursor.shape = Term2::CursorShape::Block
+
+      @filter.styles = input_styles
     end
 
     private def description_view : String
-      @description_eval.value
+      return "" if @description_eval.value.empty?
+      styles = active_styles
+      max_width = @width - styles.base.horizontal_frame_size
+      styles.description.render(Huh.wrap(@description_eval.value, max_width))
     end
 
     private def options_view : String
@@ -430,18 +475,44 @@ module Huh
     end
 
     private def inline_options_view : String
-      if @filtered_options.empty?
-        "No matches"
-      else
-        @filtered_options[@selected].key
-      end
+      styles = active_styles
+      option = if @filtered_options.empty?
+                 styles.text_input.placeholder.render("No matches")
+               else
+                 styles.selected_option.render(@filtered_options[@selected].key)
+               end
+
+      # Get indicator strings (styled)
+      prev_indicator = styles.prev_indicator.render("")
+      next_indicator = styles.next_indicator.render("")
+
+      Lipgloss::Style.new
+        .width(@width)
+        .render(Lipgloss.join_horizontal(Lipgloss::Position::Left,
+          prev_indicator,
+          option,
+          next_indicator
+        ))
     end
 
     private def render_option(option : Option(T), selected : Bool) : String
+      styles = active_styles
+      cursor = styles.select_selector.render("") # Get styled cursor (string value is in style)
+      cursor_width = Lipgloss::Text.width(cursor)
+      max_width = @width - styles.base.horizontal_frame_size - cursor_width
+
+      key = Huh.wrap(option.key, max_width)
+
       if selected
-        "> " + option.key
+        Lipgloss.join_horizontal(Lipgloss::Position::Left,
+          cursor,
+          styles.selected_option.render(key)
+        )
       else
-        "  " + option.key
+        Lipgloss.join_horizontal(Lipgloss::Position::Left,
+          " " * cursor_width,
+          styles.unselected_option.render(key)
+        )
       end
     end
 

@@ -174,7 +174,7 @@ module Huh
       # Default styles
       theme.form.base = Lipgloss::Style.new
       theme.group.base = Lipgloss::Style.new
-      theme.field_separator = Lipgloss::Style.new.string("\n\n")
+      theme.field_separator = Lipgloss::Style.new.tap(&.string=("\n\n"))
 
       # Button style base
       button = Lipgloss::Style.new
@@ -187,13 +187,20 @@ module Huh
         .border_style(Lipgloss::Border.thick)
         .border_left(true)
       theme.focused.card = theme.focused.base
-      theme.focused.error_indicator = Lipgloss::Style.new.string(" *")
-      theme.focused.error_message = Lipgloss::Style.new.string(" *")
+      theme.focused.error_indicator = Lipgloss::Style.new.tap(&.string=(" *"))
+      theme.focused.error_message = Lipgloss::Style.new.tap(&.string=(" *"))
+      theme.focused.select_selector = Lipgloss::Style.new.tap(&.string=("> "))
+      theme.focused.next_indicator = Lipgloss::Style.new.margin_left(1).tap(&.string=("→"))
+      theme.focused.prev_indicator = Lipgloss::Style.new.margin_right(1).tap(&.string=("←"))
+      theme.focused.multiselect_selector = Lipgloss::Style.new.tap(&.string=("> "))
+      theme.focused.selected_prefix = Lipgloss::Style.new.tap(&.string=("[•] "))
+      theme.focused.unselected_prefix = Lipgloss::Style.new.tap(&.string=("[ ] "))
 
       # Blurred styles start as copy of focused
       theme.blurred.copy_from(theme.focused)
       theme.blurred.base = theme.focused.base.border_style(Lipgloss::Border.hidden)
       theme.blurred.card = theme.blurred.base
+      theme.blurred.multiselect_selector = Lipgloss::Style.new.tap(&.string=("  "))
 
       # Group styles
       theme.group.title = theme.focused.title
@@ -221,13 +228,13 @@ module Huh
       theme.focused.directory = theme.focused.directory.foreground(indigo)
       theme.focused.error_indicator = theme.focused.error_indicator.foreground(red)
       theme.focused.error_message = theme.focused.error_message.foreground(red)
-      theme.focused.select_selector = theme.focused.select_selector.foreground(fuchsia)
-      theme.focused.next_indicator = theme.focused.next_indicator.foreground(fuchsia)
-      theme.focused.prev_indicator = theme.focused.prev_indicator.foreground(fuchsia)
+      theme.focused.select_selector = theme.focused.select_selector.foreground(fuchsia).tap(&.string=("> "))
+      theme.focused.next_indicator = theme.focused.next_indicator.foreground(fuchsia).tap(&.string=("→"))
+      theme.focused.prev_indicator = theme.focused.prev_indicator.foreground(fuchsia).tap(&.string=("←"))
       theme.focused.multiselect_selector = theme.focused.multiselect_selector.foreground(fuchsia)
       theme.focused.selected_option = theme.focused.selected_option.foreground(green)
-      theme.focused.selected_prefix = Lipgloss::Style.new.foreground(Lipgloss::Color.from_hex("#02CF92")).string("✓ ")
-      theme.focused.unselected_prefix = Lipgloss::Style.new.string("• ")
+      theme.focused.selected_prefix = Lipgloss::Style.new.foreground(Lipgloss::Color.from_hex("#02CF92")).tap(&.string=("✓ "))
+      theme.focused.unselected_prefix = Lipgloss::Style.new.tap(&.string=("• "))
       theme.focused.focused_button = theme.focused.focused_button.foreground(cream).background(fuchsia)
       theme.focused.next = theme.focused.focused_button
       theme.focused.blurred_button = theme.focused.blurred_button.foreground(Lipgloss::Color.indexed(235)).background(Lipgloss::Color.indexed(252))
@@ -241,6 +248,7 @@ module Huh
       theme.blurred.card = theme.blurred.base
       theme.blurred.next_indicator = Lipgloss::Style.new
       theme.blurred.prev_indicator = Lipgloss::Style.new
+      theme.blurred.multiselect_selector = Lipgloss::Style.new.tap(&.string=("  "))
 
       theme.group.title = theme.focused.title
       theme.group.description = theme.focused.description

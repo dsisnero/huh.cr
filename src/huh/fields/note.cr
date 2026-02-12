@@ -1,3 +1,6 @@
+require "../utils"
+require "lipgloss"
+
 module Huh
   # Note field for displaying information to the user
   class Note < Field(Nil)
@@ -98,22 +101,31 @@ module Huh
     end
 
     def view : String
-      # Build the note view with title and description
-      String.build do |str|
-        title = @title_eval.value
-        if !title.empty?
-          str << title << "\n"
-        end
+      styles = active_styles
+      max_width = @width - styles.card.horizontal_frame_size
+      sb = String::Builder.new
 
-        description = @description_eval.value
-        if !description.empty?
-          str << description << "\n"
-        end
-
-        if @show_next_button
-          str << "\n[#{@next_label}]"
-        end
+      title = @title_eval.value
+      if !title.empty?
+        sb << styles.note_title.render(Huh.wrap(title, max_width))
       end
+
+      description = @description_eval.value
+      if !description.empty?
+        sb << "\n"
+        sb << Huh.wrap(render_markdown(description), max_width)
+        sb << "\n"
+      end
+
+      if @show_next_button
+        sb << "\n"
+        sb << styles.next.render(@next_label)
+      end
+
+      styles.card
+        .height(@height)
+        .width(@width)
+        .render(sb.to_s)
     end
 
     def blur : Term2::Cmd
@@ -156,8 +168,63 @@ module Huh
 
     # Simple markdown-like rendering (basic implementation)
     private def render_markdown(input : String) : String
-      # TODO: Implement markdown rendering like Go version
-      input
+      result = String::Builder.new
+      italic = false
+      bold = false
+      codeblock = false
+      escape = false
+
+      input.each_char do |char|
+        if escape || codeblock
+          result << char
+          escape = false
+          next
+        end
+
+        case char
+        when '\\'
+          escape = true
+        when '_'
+          if !italic
+            result << "\e[3m"
+            italic = true
+          else
+            result << "\e[23m"
+            italic = false
+          end
+        when '*'
+          if !bold
+            result << "\e[1m"
+            bold = true
+          else
+            result << "\e[22m"
+            bold = false
+          end
+        when '`'
+          if !codeblock
+            result << "\e[0;37;40m"
+            result << " "
+            codeblock = true
+          else
+            result << " "
+            result << "\e[0m"
+            codeblock = false
+
+            if bold
+              result << "\e[1m"
+            end
+            if italic
+              result << "\e[3m"
+            end
+          end
+        else
+          result << char
+        end
+      end
+
+      # Reset any open formatting
+      result << "\e[0m"
+      result.to_s
     end
   end
 end

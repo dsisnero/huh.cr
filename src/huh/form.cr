@@ -129,6 +129,10 @@ module Huh
       @selector = Selector(FieldBase).new(fields.map(&.as(FieldBase)).to_a)
       @width = 80
       @theme = nil
+      # Propagate default width to all fields
+      @selector.items.each do |field|
+        field.with_width(@width)
+      end
     end
 
     def init : Term2::Cmd

@@ -1,8 +1,10 @@
 require "../option"
 require "../eval"
+require "../utils"
 require "term2/components/viewport"
 require "term2/components/spinner"
 require "term2/components/text_input"
+require "lipgloss"
 
 module Huh
   # MultiSelect is a multi-select field.
@@ -291,6 +293,7 @@ module Huh
     end
 
     def view : String
+      styles = active_styles
       update_viewport_height
       options = options_view
       @viewport.content = options
@@ -301,7 +304,11 @@ module Huh
       description = description_view
       parts << description unless description.empty?
       parts << @viewport.view.content
-      parts.join("\n")
+
+      styles.base
+        .width(@width)
+        .height(@height)
+        .render(parts.join("\n"))
     end
 
     def blur : Term2::Cmd
@@ -390,22 +397,60 @@ module Huh
     end
 
     private def title_view : String
-      title = if @filtering
-                @filter.view.content
-              elsif !@filter.value.empty?
-                "/" + @filter.value
-              else
-                @title_eval.value
-              end
-      if @error
-        title + " [!]"
+      styles = active_styles
+      max_width = @width - styles.base.horizontal_frame_size
+      sb = String::Builder.new
+
+      if @filtering
+        # Apply styles to filter text input
+        apply_filter_styles
+        sb << @filter.view.content
+      elsif !@filter.value.empty?
+        sb << styles.description.render("/" + @filter.value)
       else
-        title
+        sb << styles.title.render(Huh.wrap(@title_eval.value, max_width))
       end
+
+      if @error
+        sb << styles.error_indicator.render("")
+      end
+
+      sb.to_s
     end
 
     private def description_view : String
-      @description_eval.value
+      return "" if @description_eval.value.empty?
+      styles = active_styles
+      max_width = @width - styles.base.horizontal_frame_size
+      styles.description.render(Huh.wrap(@description_eval.value, max_width))
+    end
+
+    # Apply theme styles to the filter text input component
+    private def apply_filter_styles
+      theme = @theme || Theme.default
+      focused_styles = theme.focused
+      blurred_styles = theme.blurred
+      input_styles = Term2::Components::TextInput::Styles.new
+
+      # Map focused styles
+      input_styles.focused.text = focused_styles.text_input.text
+      input_styles.focused.placeholder = focused_styles.text_input.placeholder
+      input_styles.focused.prompt = focused_styles.text_input.prompt
+      input_styles.focused.suggestion = focused_styles.text_input.text
+
+      # Map blurred styles
+      input_styles.blurred.text = blurred_styles.text_input.text
+      input_styles.blurred.placeholder = blurred_styles.text_input.placeholder
+      input_styles.blurred.prompt = blurred_styles.text_input.prompt
+      input_styles.blurred.suggestion = blurred_styles.text_input.text
+
+      # Map cursor style
+      cursor_style = focused_styles.text_input.cursor
+      cursor_color = cursor_style.foreground
+      input_styles.cursor.color = cursor_color
+      input_styles.cursor.shape = Term2::CursorShape::Block
+
+      @filter.styles = input_styles
     end
 
     private def options_view : String
@@ -420,15 +465,35 @@ module Huh
     end
 
     private def render_option(option : Option(T), cursor : Bool, selected : Bool) : String
+      styles = active_styles
+
+      # Get styled cursor ("> " or "  ")
+      cursor_style = styles.multiselect_selector
+      cursor_text = cursor_style.render("")
+      cursor_width = Lipgloss::Text.width(cursor_text)
+
+      # Get prefix style (selected/unselected)
+      prefix_style = selected ? styles.selected_prefix : styles.unselected_prefix
+      prefix_text = prefix_style.render("")
+      prefix_width = Lipgloss::Text.width(prefix_text)
+
+      # Calculate available width for option key
+      max_width = @width - styles.base.horizontal_frame_size - cursor_width - prefix_width
+      key = Huh.wrap(option.key, max_width)
+
+      # Build the line
       if cursor
-        prefix = "> "
+        Lipgloss.join_horizontal(Lipgloss::Position::Left,
+          cursor_text,
+          prefix_text,
+          (selected ? styles.selected_option : styles.unselected_option).render(key)
+        )
       else
-        prefix = "  "
-      end
-      if selected
-        prefix + "[x] " + option.key
-      else
-        prefix + "[ ] " + option.key
+        Lipgloss.join_horizontal(Lipgloss::Position::Left,
+          " " * cursor_width,
+          prefix_text,
+          (selected ? styles.selected_option : styles.unselected_option).render(key)
+        )
       end
     end
 
