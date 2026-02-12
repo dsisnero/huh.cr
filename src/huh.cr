@@ -29,6 +29,7 @@ require "./huh/form"
 require "./huh/fields/input"
 require "./huh/fields/confirm"
 require "./huh/fields/select"
+require "./huh/fields/multiselect"
 
 # Extend module with factory functions
 module Huh
@@ -51,5 +52,9 @@ module Huh
 
   def self.new_select(type : T.class) : Select(T) forall T
     Select(T).new
+  end
+
+  def self.new_multiselect(type : T.class) : MultiSelect(T) forall T
+    MultiSelect(T).new
   end
 end
