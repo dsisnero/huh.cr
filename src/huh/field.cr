@@ -31,6 +31,7 @@ module Huh
     abstract def zoom : Bool
     abstract def key_binds : Array(KeyBinding)
     abstract def run_accessible(writer : IO, reader : IO) : Nil
+    abstract def focused? : Bool
 
     # Fluent configuration methods
     def with_title(title : String) : self
@@ -88,6 +89,15 @@ module Huh
     def get_key : String
       @key
     end
+
+    # Get active styles based on focus state
+    protected def active_styles : FieldStyles
+      theme = @theme || Theme.default
+      focused? ? theme.focused : theme.blurred
+    end
+
+    # Check if field is focused (to be implemented by subclasses)
+    protected abstract def focused? : Bool
   end
 
   # Abstract base class for all form fields (typed)
@@ -126,10 +136,7 @@ module Huh
     keys : Array(String),
     help : String = ""
 
-  # Theme (placeholder - will be implemented later)
-  class Theme
-  end
-
+  # Theme is defined in theme.cr
   # Key map (placeholder - will be implemented later)
   class KeyMap
   end

@@ -21,6 +21,7 @@ module Huh
 end
 
 # Load core components
+require "./huh/theme"
 require "./huh/field"
 require "./huh/accessor"
 require "./huh/selector"
@@ -30,6 +31,7 @@ require "./huh/fields/input"
 require "./huh/fields/confirm"
 require "./huh/fields/select"
 require "./huh/fields/multiselect"
+require "./huh/fields/text"
 
 # Extend module with factory functions
 module Huh
@@ -56,5 +58,9 @@ module Huh
 
   def self.new_multiselect(type : T.class) : MultiSelect(T) forall T
     MultiSelect(T).new
+  end
+
+  def self.new_text : Text
+    Text.new
   end
 end

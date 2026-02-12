@@ -87,6 +87,10 @@ module Huh
       Term2::Cmds.none
     end
 
+    def focused? : Bool
+      @focused
+    end
+
     def update(msg : Term2::Msg) : {Term2::Model, Term2::Cmd}
       # TODO: Handle key events for navigation
       # TODO: Handle updateFieldMsg for dynamic content

@@ -1,4 +1,5 @@
 require "term2/components/text_input"
+require "../utils"
 
 module Huh
   # Input field for single-line text entry
@@ -24,6 +25,8 @@ module Huh
     property height : Int32 = 0
     property theme : Theme? = nil
     property keymap : KeyMap? = nil
+    property focused : Bool = false
+    property inline : Bool = false
 
     # Create a new Input field
     def initialize
@@ -173,6 +176,10 @@ module Huh
       @textinput.init
     end
 
+    def focused? : Bool
+      @focused
+    end
+
     def update(msg : Term2::Msg) : {Term2::Model, Term2::Cmd}
       # Delegate to text input component
       _, cmd = @textinput.update(msg)
@@ -189,28 +196,55 @@ module Huh
     end
 
     def view : String
-      # Build the field view with title, description, and text input
-      String.build do |str|
-        # Title
-        title = @title_eval.value
-        if !title.empty?
-          str << title << "\n"
-        end
+      styles = active_styles
+      max_width = @width - styles.base.horizontal_frame_size
 
-        # Description
-        description = @description_eval.value
-        if !description.empty?
-          str << description << "\n"
-        end
+      # Apply styles to text input component
+      apply_styles
 
-        # Error message
-        if @error
-          str << "Error: " << @error.not_nil!.message << "\n"
-        end
-
-        # Text input view
-        str << @textinput.view.content
+      # Adjust text input size to its char limit if it fits in its width
+      if @textinput.char_limit > 0
+        new_width = {@textinput.char_limit, @textinput.width, max_width}.min
+        new_width = {new_width, 0}.max
+        @textinput.width = new_width
       end
+
+      # Build the field view
+      sb = String::Builder.new
+
+      # Title
+      title = @title_eval.value
+      if !title.empty?
+        rendered_title = styles.title.render(Huh.wrap(title, max_width))
+        sb << rendered_title
+        unless @inline
+          sb << "\n"
+        end
+      end
+
+      # Description
+      description = @description_eval.value
+      if !description.empty?
+        rendered_description = styles.description.render(Huh.wrap(description, max_width))
+        sb << rendered_description
+        unless @inline
+          sb << "\n"
+        end
+      end
+
+      # Error message (TODO: style with error_message style)
+      if @error
+        sb << "Error: " << @error.not_nil!.message << "\n"
+      end
+
+      # Text input view
+      sb << @textinput.view.content
+
+      # Apply base style with width and height
+      styles.base
+        .width(@width)
+        .height(@height)
+        .render(sb.to_s)
     end
 
     def blur : Term2::Cmd
@@ -260,6 +294,37 @@ module Huh
       @error = @validate.call(@accessor.get)
     rescue e : Exception
       @error = e
+    end
+
+    # Apply theme styles to the text input component
+    private def apply_styles
+      theme = @theme || Theme.default
+      focused_styles = theme.focused
+      blurred_styles = theme.blurred
+      input_styles = Term2::Components::TextInput::Styles.new
+
+      # Map focused styles
+      input_styles.focused.text = focused_styles.text_input.text
+      input_styles.focused.placeholder = focused_styles.text_input.placeholder
+      input_styles.focused.prompt = focused_styles.text_input.prompt
+      input_styles.focused.suggestion = focused_styles.text_input.text # TODO: separate suggestion style?
+
+      # Map blurred styles
+      input_styles.blurred.text = blurred_styles.text_input.text
+      input_styles.blurred.placeholder = blurred_styles.text_input.placeholder
+      input_styles.blurred.prompt = blurred_styles.text_input.prompt
+      input_styles.blurred.suggestion = blurred_styles.text_input.text
+
+      # Map cursor style (use focused cursor style for both states)
+      # Extract color from cursor style's foreground if possible
+      cursor_style = focused_styles.text_input.cursor
+      cursor_color = cursor_style.foreground # returns Lipgloss::Color?
+      input_styles.cursor.color = cursor_color
+      # Shape defaults to Block
+      input_styles.cursor.shape = Term2::CursorShape::Block
+      # TODO: map cursor_text style to cursor text styling?
+
+      @textinput.styles = input_styles
     end
   end
 end

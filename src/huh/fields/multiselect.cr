@@ -244,6 +244,10 @@ module Huh
       @filter.init
     end
 
+    def focused? : Bool
+      @focused
+    end
+
     def update(msg : Term2::Msg) : {Term2::Model, Term2::Cmd}
       cmd = Term2::Cmds.none
 

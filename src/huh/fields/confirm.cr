@@ -1,3 +1,6 @@
+require "../utils"
+require "lipgloss"
+
 module Huh
   # Confirm field for yes/no boolean input
   class Confirm < Field(Bool)
@@ -19,6 +22,8 @@ module Huh
     property height : Int32 = 0
     property theme : Theme? = nil
     property keymap : KeyMap? = nil
+    property inline : Bool = false
+    property button_alignment : Lipgloss::Position = Lipgloss::Position::Left
     property affirmative : String
     property negative : String
 
@@ -118,38 +123,82 @@ module Huh
       Term2::Cmds.none
     end
 
+    def focused? : Bool
+      @focused
+    end
+
     def update(msg : Term2::Msg) : {Term2::Model, Term2::Cmd}
       # TODO: Handle key events to toggle value
       {self, Term2::Cmds.none}
     end
 
     def view : String
-      # Build the field view with title, description, and buttons
-      String.build do |str|
-        # Title
-        title = @title_eval.value
-        if !title.empty?
-          str << title << "\n"
-        end
+      styles = active_styles
+      max_width = @width - styles.base.horizontal_frame_size
 
-        # Description
-        description = @description_eval.value
-        if !description.empty?
-          str << description << "\n"
-        end
+      wrote_header = false
+      sb = String::Builder.new
 
-        # Error message
-        if @error
-          str << "Error: " << @error.not_nil!.message << "\n"
-        end
-
-        # Simple button display (without styling for now)
-        if @accessor.get
-          str << "[#{@affirmative}] #{@negative}"
-        else
-          str << "#{@affirmative} [#{@negative}]"
-        end
+      # Title
+      title = @title_eval.value
+      if !title.empty?
+        sb << styles.title.render(Huh.wrap(title, max_width))
+        wrote_header = true
       end
+
+      # Error indicator
+      if @error
+        sb << styles.error_indicator.render("")
+        wrote_header = true
+      end
+
+      # Description
+      description = @description_eval.value
+      if !description.empty?
+        rendered_desc = styles.description.render(Huh.wrap(description, max_width))
+        if !@inline && (description != "")
+          sb << "\n"
+        end
+        sb << rendered_desc
+        wrote_header = true
+      end
+
+      # Add spacing if not inline and we wrote header
+      if !@inline && wrote_header
+        sb << "\n\n"
+      end
+
+      # Button rendering
+      negative = ""
+      affirmative = ""
+      if !@negative.empty?
+        if @accessor.get
+          affirmative = styles.focused_button.render(@affirmative)
+          negative = styles.blurred_button.render(@negative)
+        else
+          affirmative = styles.blurred_button.render(@affirmative)
+          negative = styles.focused_button.render(@negative)
+        end
+      else
+        affirmative = styles.focused_button.render(@affirmative)
+      end
+
+      buttons_row = Lipgloss.join_horizontal(@button_alignment, affirmative, negative)
+
+      # Calculate widths for alignment
+      prompt_width = Lipgloss::Text.width(sb.to_s)
+      buttons_width = Lipgloss::Text.width(buttons_row)
+      render_width = {buttons_width, prompt_width}.max
+
+      # Apply alignment style
+      aligned_buttons = Lipgloss::Style.new.width(render_width).align(@button_alignment).render(buttons_row)
+      sb << aligned_buttons
+
+      # Apply base style with width and height
+      styles.base
+        .width(@width)
+        .height(@height)
+        .render(sb.to_s)
     end
 
     def blur : Term2::Cmd
