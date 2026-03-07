@@ -23,4 +23,4 @@ markdown-check:
 	rumdl check . --check
 
 clean:
-	rm -rf temp/*
+	rm -rf temp/**
