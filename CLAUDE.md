@@ -58,6 +58,7 @@ Format: `<type>(<scope>): <description>`
 Types: feat, fix, docs, refactor, test, chore, perf
 
 Examples:
+
 - feat(input): add placeholder support
 - fix(select): handle empty options list
 - docs: update porting parity documentation
@@ -89,11 +90,13 @@ fastmod --help
 ```
 
 **Common fastmod patterns:**
+
 - `fastmod -d . 'old_pattern' 'new_pattern'` - Dry run to see changes
 - `fastmod 'old_pattern' 'new_pattern' --extensions cr,md` - Replace in specific file types
 - `fastmod --accept-all 'old_pattern' 'new_pattern'` - Apply changes without confirmation
 
 **When to use fastmod:**
+
 - Renaming variables/functions across multiple files
 - Updating import statements
 - Changing API signatures
@@ -110,6 +113,7 @@ fastmod --help
 ## Debugging
 
 When something breaks:
+
 1. Check `temp/` directory for debug scripts and output
 2. Run `make clean` to clear artifacts before re-running tests
 3. Compare output with Go golden files in `testdata/go/`
