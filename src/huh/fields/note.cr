@@ -10,14 +10,14 @@ module Huh
     @next_label : String
 
     # Field state
-    property focused : Bool = false
-    property show_next_button : Bool = false
-    property skip : Bool = true
-    property accessible : Bool = false
+    property? focused : Bool = false
+    property? show_next_button : Bool = false
+    property? skip : Bool = true
+    property? accessible : Bool = false
     property width : Int32 = 0
     property height : Int32 = 0
     property theme : Theme? = nil
-    property keymap : KeyMap? = nil
+    property keymap : NoteKeyMap? = nil
 
     # Create a new Note field
     def initialize
@@ -42,10 +42,22 @@ module Huh
       self
     end
 
+    # TitleFunc sets a function to dynamically compute the title.
+    def title_func(fn : Proc(String)) : self
+      @title_eval.function(fn)
+      self
+    end
+
+    # DescriptionFunc sets a function to dynamically compute the description.
+    def description_func(fn : Proc(String)) : self
+      @description_eval.function(fn)
+      self
+    end
+
     # Height sets the note field's height
     def height(height : Int32) : self
       @height = height
-      super
+      self
     end
 
     # Next sets whether or not to show the next button
@@ -63,7 +75,7 @@ module Huh
     # Width configuration
     def width(width : Int32) : self
       @width = width
-      super
+      self
     end
 
     # Theme configuration
@@ -74,8 +86,13 @@ module Huh
 
     # Keymap configuration
     def keymap(keymap : KeyMap) : self
-      @keymap = keymap
+      @keymap = keymap.note
       self
+    end
+
+    # Implement field_keymap abstract method
+    def field_keymap : Object?
+      @keymap
     end
 
     # Accessible mode configuration
@@ -86,18 +103,22 @@ module Huh
 
     # Required Field methods
 
-    def init : Term2::Cmd
-      Term2::Cmds.none
+    def init : Tea::Cmd?
+      nil
     end
 
     def focused? : Bool
       @focused
     end
 
-    def update(msg : Term2::Msg) : {Term2::Model, Term2::Cmd}
+    def update(msg : ::Tea::Msg) : {self, Tea::Cmd?}
+      if msg.is_a?(Huh::UpdateFieldMsg)
+        @title_eval.update
+        @description_eval.update
+      end
+
       # TODO: Handle key events for navigation
-      # TODO: Handle updateFieldMsg for dynamic content
-      {self, Term2::Cmds.none}
+      {self, nil}
     end
 
     def view : String
@@ -128,14 +149,14 @@ module Huh
         .render(sb.to_s)
     end
 
-    def blur : Term2::Cmd
+    def blur : Tea::Cmd?
       @focused = false
-      Term2::Cmds.none
+      nil
     end
 
-    def focus : Term2::Cmd
+    def focus : Tea::Cmd?
       @focused = true
-      Term2::Cmds.none
+      nil
     end
 
     def skip : Bool
@@ -150,10 +171,15 @@ module Huh
       [] of KeyBinding
     end
 
+    def error : Exception?
+      nil
+    end
+
     def run_accessible(writer : IO, reader : IO) : Nil
+      styles = active_styles
       title = @title_eval.value
       if !title.empty?
-        writer << title << "\n"
+        writer << styles.title.render(title) << "\n"
       end
       description = @description_eval.value
       if !description.empty?

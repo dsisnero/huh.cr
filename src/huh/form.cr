@@ -1,25 +1,59 @@
 require "./field"
 require "./selector"
-require "term2"
+require "./layout"
 
 module Huh
   # Form represents a collection of groups that can be filled out by the user.
+  #
+  # Forms are composed of groups, which are composed of fields. Each group
+  # represents a logical section or "page" of the form.
+  #
+  # ## Example
+  #
+  # ```
+  # form = Huh.new_form(
+  #   Huh.new_group(
+  #     Huh.new_input.title("Name"),
+  #     Huh.new_input.title("Email")
+  #   ),
+  #   Huh.new_group(
+  #     Huh.new_confirm.title("Subscribe to newsletter?")
+  #   )
+  # )
+  #
+  # form.run
+  # ```
+  #
+  # ## Navigation
+  #
+  # Users navigate between groups using Tab/Shift+Tab or arrow keys.
+  # Each group can contain multiple fields that are navigated with Tab/Shift+Tab.
+  #
   class Form
-    include Term2::Model
-
     @selector : Selector(Group)
     @width : Int32
     @theme : Theme?
+    @accessible : Bool = false
     @state : Symbol = :normal
+    @layout : Layout::LayoutBase = Layout::LAYOUT_DEFAULT
 
+    # Creates a new form with the given groups.
+    #
+    # ```
+    # form = Huh::Form.new(
+    #   Huh::Group.new(field1, field2),
+    #   Huh::Group.new(field3)
+    # )
+    # ```
     def initialize(*groups : Group)
       @selector = Selector(Group).new(groups.map(&.as(Group)).to_a)
       @width = 80
       @theme = nil
+      @layout = Layout::LAYOUT_DEFAULT
     end
 
-    def init : Term2::Cmd
-      cmds = [] of Term2::Cmd
+    def init : Tea::Cmd?
+      cmds = [] of Tea::Cmd?
       @selector.range do |i, group|
         if i == 0
           group.active = true
@@ -27,23 +61,73 @@ module Huh
         cmds << group.init
         true
       end
-      Term2::Cmds.batch(cmds)
+      # Update field positions before initializing
+      update_field_positions
+      Tea.batch(cmds)
     end
 
-    def update(msg : Term2::Msg) : {Term2::Model, Term2::Cmd}
+    # UpdateFieldPositions sets the position on all the fields.
+    def update_field_positions : self
+      first_group = 0
+      last_group = @selector.total - 1
+
+      # For now, we don't have hidden groups, so first_group and last_group
+      # are just 0 and total-1
+      # TODO: Implement hidden groups logic when we add group hiding
+
+      @selector.range do |group_index, group|
+        # Determine first non-skippable field
+        first_field = 0
+        group.selector.range do |_, field|
+          if !field.skip || group.selector.total == 1
+            next false # break from loop
+          end
+          first_field += 1
+          true
+        end
+
+        # Determine last non-skippable field
+        last_field = group.selector.total - 1
+        group.selector.reverse_range do |i, field|
+          last_field = i
+          if !field.skip || group.selector.total == 1
+            next false # break from loop
+          end
+          true
+        end
+
+        # Set position on all fields
+        group.selector.range do |i, field|
+          field.with_position(FieldPosition.new(
+            group: group_index,
+            field: i,
+            first_field: i == first_field,
+            last_field: i == last_field,
+            first_group: group_index == first_group,
+            last_group: group_index == last_group
+          ))
+          true
+        end
+        true
+      end
+
+      self
+    end
+
+    def update(msg : ::Tea::Msg) : {self, Tea::Cmd?}
       case msg
       when NextGroupMsg
         # Move to next non-hidden group
         if @selector.on_last?
-          # TODO: submit form
-          return {self, Term2::Cmds.none}
+          @state = :completed
+          return {self, Tea.quit}
         end
         @selector.next
         @selector.selected.active = true
         {self, @selector.selected.init}
       when PrevGroupMsg
         if @selector.on_first?
-          return {self, Term2::Cmds.none}
+          return {self, nil}
         end
         @selector.prev
         @selector.selected.active = true
@@ -59,12 +143,8 @@ module Huh
     end
 
     def view : String
-      # Simple border rendering for now
-      group_view = @selector.selected.view
-
-      # Add border similar to Go's default theme
-      # This is a minimal implementation to match golden files
-      "┃ #{group_view.lines.map(&.lstrip).join("\n┃ ")}\n\nenter submit"
+      # Use layout to render form (matches Go form.View() which calls f.layout.View(f))
+      @layout.view(self)
     end
 
     # Fluent configuration
@@ -77,14 +157,51 @@ module Huh
       @theme = theme
       self
     end
+
+    def with_layout(layout : Layout::LayoutBase) : self
+      @layout = layout
+      self
+    end
+
+    # Getter for selector
+    def selector : Selector(Group)
+      @selector
+    end
+
+    # Run runs the form as a standalone program.
+    def run : Nil
+      if @accessible
+        run_accessible
+        return
+      end
+      program = Tea::Program.new(Huh::RuntimeModel(Form).new(self))
+      program.run
+    end
+
+    # WithAccessible runs the form using accessible prompt mode.
+    def with_accessible(accessible : Bool) : self
+      @accessible = accessible
+      self
+    end
+
+    # RunAccessible runs the form in accessible mode (non-interactive).
+    def run_accessible : Nil
+      @selector.range do |i, group|
+        group.active = (i == 0)
+        group.run_accessible(STDOUT, STDIN)
+        true
+      end
+    end
   end
 
   # Message to move to next field
   struct NextFieldMsg
+    include ::Tea::Msg
   end
 
   # Message to move to previous field
   struct PrevFieldMsg
+    include ::Tea::Msg
   end
 
   # Command to move to next field
@@ -97,12 +214,23 @@ module Huh
     PrevFieldMsg.new
   end
 
+  # Message to trigger dynamic field reevaluation in the active group.
+  struct UpdateFieldMsg
+    include ::Tea::Msg
+  end
+
+  def self.update_field : UpdateFieldMsg
+    UpdateFieldMsg.new
+  end
+
   # Message to move to next group
   struct NextGroupMsg
+    include ::Tea::Msg
   end
 
   # Message to move to previous group
   struct PrevGroupMsg
+    include ::Tea::Msg
   end
 
   # Command to move to next group
@@ -117,26 +245,26 @@ module Huh
 
   # Group represents a collection of fields that are shown together.
   class Group
-    include Term2::Model
-
     @selector : Selector(FieldBase)
     @width : Int32
     @theme : Theme?
     @active : Bool = false
-    property active : Bool
+    @help : Bubbles::Help::Model
+    property? active : Bool
 
     def initialize(*fields : FieldBase)
       @selector = Selector(FieldBase).new(fields.map(&.as(FieldBase)).to_a)
       @width = 80
       @theme = nil
+      @help = Bubbles::Help::Model.new
       # Propagate default width to all fields
       @selector.items.each do |field|
         field.with_width(@width)
       end
     end
 
-    def init : Term2::Cmd
-      cmds = [] of Term2::Cmd
+    def init : Tea::Cmd?
+      cmds = [] of Tea::Cmd?
       # Initialize all fields
       @selector.range do |_, field|
         cmds << field.init
@@ -145,38 +273,57 @@ module Huh
       if @active
         cmds << @selector.selected.focus
       end
-      Term2::Cmds.batch(cmds)
+      Tea.batch(cmds)
     end
 
-    def update(msg : Term2::Msg) : {Term2::Model, Term2::Cmd}
+    def update(msg : ::Tea::Msg) : {self, Tea::Cmd?}
+      cmds = [] of Tea::Cmd?
+
       case msg
       when NextFieldMsg
         cmds = next_field
-        {self, Term2::Cmds.batch(cmds)}
+        {self, Tea.batch(cmds)}
       when PrevFieldMsg
         cmds = prev_field
-        {self, Term2::Cmds.batch(cmds)}
+        {self, Tea.batch(cmds)}
       else
-        # Update selected field
-        idx = @selector.index
-        field = @selector.selected
-        updated, cmd = field.update(msg)
-        @selector.set(idx, updated.as(FieldBase))
-        {self, cmd}
+        selected_index = @selector.index
+        keypress = msg.is_a?(Tea::KeyPressMsg)
+
+        @selector.range do |index, field|
+          current = field
+
+          # Match upstream behavior: selected field receives key messages,
+          # all fields receive non-key messages.
+          if !keypress || index == selected_index
+            updated, cmd = current.update(msg)
+            current = updated.as(FieldBase)
+            @selector.set(index, current)
+            cmds << cmd
+          end
+
+          # All fields reevaluate dynamic funcs after each update cycle.
+          reevaluated, reevaluate_cmd = current.update(Huh.update_field)
+          @selector.set(index, reevaluated.as(FieldBase))
+          cmds << reevaluate_cmd
+          true
+        end
+
+        {self, Tea.batch(cmds)}
       end
     end
 
-    private def next_field : Array(Term2::Cmd)
-      cmds = [] of Term2::Cmd
+    private def next_field : Array(Tea::Cmd?)
+      cmds = [] of Tea::Cmd?
       cmds << @selector.selected.blur
       if @selector.on_last?
-        # TODO: Move to next group
+        cmds << (-> : ::Tea::Msg? { Huh.next_group })
         return cmds
       end
       @selector.next
-      while @selector.selected.skip?
+      while @selector.selected.skip
         if @selector.on_last?
-          # TODO: Move to next group
+          cmds << (-> : ::Tea::Msg? { Huh.next_group })
           break
         end
         @selector.next
@@ -185,17 +332,17 @@ module Huh
       cmds
     end
 
-    private def prev_field : Array(Term2::Cmd)
-      cmds = [] of Term2::Cmd
+    private def prev_field : Array(Tea::Cmd?)
+      cmds = [] of Tea::Cmd?
       cmds << @selector.selected.blur
       if @selector.on_first?
-        # TODO: Move to previous group
+        cmds << (-> : ::Tea::Msg? { Huh.prev_group })
         return cmds
       end
       @selector.prev
-      while @selector.selected.skip?
+      while @selector.selected.skip
         if @selector.on_first?
-          # TODO: Move to previous group
+          cmds << (-> : ::Tea::Msg? { Huh.prev_group })
           break
         end
         @selector.prev
@@ -205,7 +352,69 @@ module Huh
     end
 
     def view : String
-      @selector.items.map(&.view).join("\n")
+      # Match Go Group.View() which returns content + footer
+      content + footer
+    end
+
+    # Content returns the rendered content of the group without borders.
+    def content : String
+      # Match Go viewport rendering: trailing spacer row at group width before footer/help.
+      @selector.items.map(&.view).join("\n") + "\n" + (" " * @width)
+    end
+
+    # Footer returns the footer text for the group.
+    def footer : String
+      # Start with newline like Go's Footer() method
+      String.build do |str|
+        str << '\n'
+
+        # Get help text from field's key bindings
+        field = @selector.selected.as(Huh::FieldBase)
+        huh_bindings = field.key_binds
+        # Convert Huh KeyBinding to Bubbles Key::Binding
+        bubbles_bindings = huh_bindings.map do |binding|
+          # Map key names to display symbols (matching Go behavior)
+          display_key = case binding.action
+                        when :up
+                          "↑"
+                        when :down
+                          "↓"
+                        when :toggle
+                          "←/→"
+                        when :filter
+                          "/"
+                        when :submit
+                          "enter"
+                        when :accept
+                          "y"
+                        when :reject
+                          "n"
+                        else
+                          binding.keys.first? || ""
+                        end
+
+          Bubbles::Key::Binding.new(
+            keys: binding.keys,
+            help: Bubbles::Key::Help.new(
+              key: display_key,
+              desc: binding.help
+            )
+          )
+        end
+        str << @help.short_help_view(bubbles_bindings)
+
+        # TODO: Add error display like Go's Footer() when showErrors is true
+      end
+    end
+
+    # Getter for selector
+    def selector : Selector(FieldBase)
+      @selector
+    end
+
+    # Getter for help model
+    def help : Bubbles::Help::Model
+      @help
     end
 
     # Fluent configuration
@@ -217,6 +426,14 @@ module Huh
     def with_theme(theme : Theme) : self
       @theme = theme
       self
+    end
+
+    # RunAccessible runs the group in accessible mode.
+    def run_accessible(writer : IO, reader : IO) : Nil
+      @selector.range do |_, field|
+        field.run_accessible(writer, reader)
+        true
+      end
     end
 
     # Get fields

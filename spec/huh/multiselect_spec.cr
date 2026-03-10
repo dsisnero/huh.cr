@@ -36,7 +36,7 @@ module Huh
 
     it "can set filterable" do
       sel = Huh.new_multiselect(String).filterable(false)
-      sel.filterable.should be_false
+      sel.filterable?.should be_false
     end
   end
 end

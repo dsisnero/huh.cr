@@ -1,7 +1,7 @@
 # Eval is an evaluatable value, it stores a cached value and a function to
-# recompute it. Its bindings are what we check to see if we need to recompute
-# the value.
-# NOTE: This is a simplified version without bindings hash for now.
+# recompute it.
+# NOTE: Simplified version without automatic binding tracking.
+# For dynamic forms, functions can be set but need manual updating.
 module Huh
   class Eval(T)
     @val : T
@@ -12,7 +12,7 @@ module Huh
       @fn = nil
     end
 
-    # Creates a new Eval with a function (no bindings support yet)
+    # Creates a new Eval with a function
     def initialize(&block : -> T)
       @val = block.call
       @fn = block

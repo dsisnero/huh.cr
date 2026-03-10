@@ -29,8 +29,24 @@ module Huh
       confirm.get_value.should be_false
     end
 
-    pending "matches golden file for basic confirm" do
-      # TODO: Implement golden test when theming is ready
+    it "matches golden file for basic confirm" do
+      # Create confirm field with same options as golden file
+      confirm_field = Huh.new_confirm
+        .title("Are you sure?")
+        .affirmative("Yes")
+        .negative("No")
+
+      # Create form with group (as done in golden generator)
+      form = Huh.new_form(Huh.new_group(confirm_field))
+
+      # Initialize the form
+      form.init
+
+      # Get the view and strip ANSI codes like Go tests do
+      view = Ansi.strip(form.view)
+
+      # Compare with golden file
+      Golden.require_equal("confirm_initial", view, "testdata/go")
     end
   end
 end

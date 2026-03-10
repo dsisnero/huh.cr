@@ -1,10 +1,9 @@
 require "../spec_helper"
-require "../../src/huh"
-require "../golden_helper_spec"
+require "ansi"
 
 module Huh
   describe Input do
-    pending "matches golden file for basic input" do
+    it "matches golden file for basic input" do
       # Create input field
       input = Huh.new_input
 
@@ -14,14 +13,14 @@ module Huh
       # Initialize the form
       form.init
 
-      # Get the view
-      view = form.view
+      # Get the view and strip ANSI codes like Go tests do
+      view = Ansi.strip(form.view)
 
       # Compare with golden file
-      GoldenHelper.assert_matches(view, "input_initial.txt")
+      Golden.require_equal("input_initial", view, "testdata/go")
     end
 
-    pending "matches golden file for input with title and description" do
+    it "matches golden file for input with title and description" do
       input = Huh.new_input
         .title("What's your name?")
         .description("Enter your full name")
@@ -29,9 +28,9 @@ module Huh
 
       form = Huh.new_form(Huh.new_group(input))
       form.init
-      view = form.view
+      view = Ansi.strip(form.view)
 
-      GoldenHelper.assert_matches(view, "input_with_title.txt")
+      Golden.require_equal("input_with_title", view, "testdata/go")
     end
 
     it "can be created and configured" do

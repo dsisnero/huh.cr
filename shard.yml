@@ -8,15 +8,14 @@ crystal: ">= 1.19.1"
 flags: ["-Dpreview_mt", "-Dexecution_context"]
 
 dependencies:
-  term2:
-    github: dsisnero/term2
-    branch: v2-exp
   lipgloss:
     github: dsisnero/lipgloss
   golden:
     github: dsisnero/golden
   teatest:
     github: dsisnero/teatest
+  bubbles:
+    github: dsisnero/bubbles
 
 license: MIT
 

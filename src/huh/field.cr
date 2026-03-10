@@ -1,8 +1,6 @@
 module Huh
   # Base class for all form fields (type-erased)
   abstract class FieldBase
-    include Term2::Model
-
     # Field configuration
     property title : String = ""
     property description : String = ""
@@ -10,22 +8,30 @@ module Huh
     property width : Int32 = 0
     property height : Int32 = 0
     property theme : Theme? = nil
-    property key_map : KeyMap? = nil
-    property accessible : Bool = false
+    property key_map : Huh::KeyMap? = nil
+    property? accessible : Bool = false
     property position : FieldPosition? = nil
+
+    # Get the field-specific keymap (to be implemented by subclasses)
+    abstract def field_keymap
+
+    # Update keymap enabled states based on position (to be implemented by subclasses)
+    def update_keymap_enabled
+      # Default implementation does nothing
+    end
 
     # Value accessor (type-erased)
     abstract def value : Object
     abstract def value=(val : Object)
 
-    # Required methods from Term2::Model
-    abstract def init : Term2::Cmd
-    abstract def update(msg : Term2::Msg) : {Term2::Model, Term2::Cmd}
+    # Required methods (similar to Tea::Model interface)
+    abstract def init : Tea::Cmd?
+    abstract def update(msg : ::Tea::Msg) : {self, Tea::Cmd?}
     abstract def view : String
 
     # Field-specific methods
-    abstract def blur : Term2::Cmd
-    abstract def focus : Term2::Cmd
+    abstract def blur : Tea::Cmd?
+    abstract def focus : Tea::Cmd?
     abstract def error : Exception?
     abstract def skip : Bool
     abstract def zoom : Bool
@@ -64,7 +70,7 @@ module Huh
       self
     end
 
-    def with_key_map(key_map : KeyMap) : self
+    def with_key_map(key_map : Huh::KeyMap) : self
       @key_map = key_map
       self
     end
@@ -76,6 +82,8 @@ module Huh
 
     def with_position(position : FieldPosition) : self
       @position = position
+      # Update keymap enabled states when position is set
+      update_keymap_enabled
       self
     end
 
@@ -128,16 +136,13 @@ module Huh
     group : Int32,
     field : Int32,
     first_field : Bool,
-    last_field : Bool
+    last_field : Bool,
+    first_group : Bool,
+    last_group : Bool
 
   # Key binding for help display
   record KeyBinding,
     action : Symbol,
     keys : Array(String),
     help : String = ""
-
-  # Theme is defined in theme.cr
-  # Key map (placeholder - will be implemented later)
-  class KeyMap
-  end
 end

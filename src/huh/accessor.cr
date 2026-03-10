@@ -26,13 +26,17 @@ module Huh
     end
   end
 
-  # Cell is a mutable container for a value, similar to Go's pointer semantics
+  # Cell is a mutable container for a value, allowing fields to update variables.
+  # Similar to Go's pointer semantics but more Crystal-idiomatic.
   class Cell(T)
     property value : T
 
     def initialize(@value : T)
     end
   end
+
+  # Backward-compatible alias for previous API name.
+  Ref = Cell
 
   # PointerAccessor allows field value to be exposed as a pointed variable.
   class PointerAccessor(T)

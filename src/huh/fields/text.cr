@@ -1,6 +1,6 @@
 require "../option"
 require "../eval"
-require "term2/components/text_area"
+require "bubbles"
 
 module Huh
   # Text is a text field for multi-line input.
@@ -18,7 +18,7 @@ module Huh
     @placeholder_eval : Eval(String)
 
     # Text area component
-    @textarea : Term2::Components::TextArea
+    @textarea : Bubbles::Textarea::Model
 
     # Validation
     @validate : Proc(String, Exception | Nil)
@@ -33,7 +33,12 @@ module Huh
     @accessible : Bool = false
     @width : Int32 = 0
     @theme : Theme? = nil
-    @keymap : KeyMap? = nil
+    @keymap : TextKeyMap? = nil
+
+    # Text field specific properties
+    property char_limit : Int32 = 0
+    property lines : Int32 = 1
+    property? show_line_numbers : Bool = false
 
     # Creates a new text field.
     def initialize
@@ -46,7 +51,7 @@ module Huh
       @placeholder_eval = Eval(String).new("")
 
       # Initialize text area
-      @textarea = Term2::Components::TextArea.new
+      @textarea = Bubbles::Textarea::Model.new
       @textarea.show_line_numbers = false
       @textarea.prompt = ""
 
@@ -57,7 +62,7 @@ module Huh
       super(@accessor.get)
     end
 
-    # Value sets the value of the text field using a cell
+    # Value sets the value of the text field using a ref
     def value(cell : Cell(String)) : self
       @accessor = PointerAccessor(String).new(cell)
       @value = @accessor.get
@@ -89,7 +94,7 @@ module Huh
 
     # TitleFunc sets the title func of the text field.
     def title_func(fn : Proc(String)) : self
-      @title_eval.function = fn
+      @title_eval.function(fn)
       self
     end
 
@@ -102,7 +107,7 @@ module Huh
 
     # DescriptionFunc sets the description func of the text field.
     def description_func(fn : Proc(String)) : self
-      @description_eval.function = fn
+      @description_eval.function(fn)
       self
     end
 
@@ -114,7 +119,7 @@ module Huh
 
     # PlaceholderFunc sets the placeholder func of the text field.
     def placeholder_func(fn : Proc(String)) : self
-      @placeholder_eval.function = fn
+      @placeholder_eval.function(fn)
       self
     end
 
@@ -152,7 +157,7 @@ module Huh
     def width(width : Int32) : self
       @width = width
       @textarea.width = width
-      super
+      self
     end
 
     # Width property
@@ -161,9 +166,44 @@ module Huh
       @textarea.width = width
     end
 
+    # Override with_width to also set textarea width
+    def with_width(width : Int32) : self
+      super
+      @textarea.width = width
+      self
+    end
+
+    # Override with_height to also set textarea height
+    def with_height(height : Int32) : self
+      super
+      @textarea.height = height
+      self
+    end
+
     # Validate sets the validation function of the text field.
     def validate(&block : Proc(String, Exception | Nil)) : self
       @validate = block
+      self
+    end
+
+    # CharLimit sets the character limit of the text field.
+    def char_limit(limit : Int32) : self
+      @char_limit = limit
+      @textarea.char_limit = limit
+      self
+    end
+
+    # Lines sets the number of visible lines (height) of the text field.
+    def lines(lines : Int32) : self
+      @lines = lines
+      @textarea.height = lines
+      self
+    end
+
+    # ShowLineNumbers sets whether to show line numbers.
+    def show_line_numbers(show : Bool) : self
+      @show_line_numbers = show
+      @textarea.show_line_numbers = show
       self
     end
 
@@ -175,8 +215,13 @@ module Huh
 
     # Keymap configuration
     def keymap(keymap : KeyMap) : self
-      @keymap = keymap
+      @keymap = keymap.text
       self
+    end
+
+    # Implement field_keymap abstract method
+    def field_keymap : Object?
+      @keymap
     end
 
     # Accessible mode configuration
@@ -187,7 +232,7 @@ module Huh
 
     # Required Field methods
 
-    def init : Term2::Cmd
+    def init : Tea::Cmd?
       @textarea.init
     end
 
@@ -195,7 +240,16 @@ module Huh
       @focused
     end
 
-    def update(msg : Term2::Msg) : {Term2::Model, Term2::Cmd}
+    def update(msg : ::Tea::Msg) : {self, Tea::Cmd?}
+      if msg.is_a?(Huh::UpdateFieldMsg)
+        @title_eval.update
+        @description_eval.update
+        if @placeholder_eval.update
+          @textarea.placeholder = @placeholder_eval.value
+        end
+        return {self, nil}
+      end
+
       # Delegate to text area component
       @textarea, cmd = @textarea.update(msg)
 
@@ -226,21 +280,21 @@ module Huh
         end
 
         # Text area
-        str << @textarea.view.content
+        str << @textarea.view
       end
     end
 
-    def blur : Term2::Cmd
+    def blur : Tea::Cmd?
       value = @accessor.get
       @focused = false
       @error = @validate.call(value)
-      Term2::Cmds.none
+      nil
     end
 
-    def focus : Term2::Cmd
+    def focus : Tea::Cmd?
       @focused = true
       @textarea.focus
-      Term2::Cmds.none
+      nil
     end
 
     def skip : Bool
@@ -256,17 +310,39 @@ module Huh
     end
 
     def key_binds : Array(KeyBinding)
-      [] of KeyBinding
+      [
+        KeyBinding.new(:submit, ["enter"], "submit"),
+        KeyBinding.new(:newline, ["ctrl+j"], "new line"),
+      ]
     end
 
     def run_accessible(writer : IO, reader : IO) : Nil
-      # TODO: implement accessible mode
-      writer << "Text field accessible mode not yet implemented\n"
+      styles = active_styles
+      writer << styles.title.render(@title_eval.value) << "\n\n"
+
+      # Use accessibility module for prompting
+      input = Accessibility.prompt_string(writer, reader, "Input: ", ->(s : String) do
+        # Validate using the field's validate method
+        err = @validate.call(s)
+        err ? err.message : nil
+    rescue e : Exception
+      e.message
+      end)
+
+      @accessor.set(input)
+      @value = @accessor.get
     end
 
     # Get the current value from the accessor
     def get_value : String
       @accessor.get
+    end
+
+    # Override value= to trigger validation
+    def value=(val : Object)
+      super
+      @accessor.set(@value)
+      validate_field
     end
 
     # Validation

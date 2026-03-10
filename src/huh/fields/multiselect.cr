@@ -1,9 +1,7 @@
 require "../option"
 require "../eval"
 require "../utils"
-require "term2/components/viewport"
-require "term2/components/spinner"
-require "term2/components/text_input"
+require "bubbles"
 require "lipgloss"
 
 module Huh
@@ -19,7 +17,7 @@ module Huh
     @accessor : Accessor(Array(T))
 
     # Viewport for scrolling options
-    @viewport : Term2::Components::Viewport
+    @viewport : Bubbles::Viewport::Model
 
     # Evaluatable fields
     @title_eval : Eval(String)
@@ -39,17 +37,17 @@ module Huh
     @filtering : Bool = false
 
     # Filter input component
-    @filter : Term2::Components::TextInput
-    @spinner : Term2::Components::Spinner
+    @filter : Bubbles::TextInput::Model
+    @spinner : Bubbles::Spinner::Model
 
     # Configuration
-    property filterable : Bool = true
+    property? filterable : Bool = true
     property limit : Int32 = 0
     property width : Int32 = 0
     property height : Int32 = 0
-    property accessible : Bool = false
+    property? accessible : Bool = false
     property theme : Theme? = nil
-    property keymap : KeyMap? = nil
+    property keymap : MultiSelectKeyMap? = nil
 
     MIN_HEIGHT     =  1
     DEFAULT_HEIGHT = 10
@@ -70,7 +68,7 @@ module Huh
       @accessor = EmbeddedAccessor(Array(T)).new([] of T)
 
       # Initialize viewport
-      @viewport = Term2::Components::Viewport.new(0, 0)
+      @viewport = Bubbles::Viewport::Model.new
 
       # Initialize eval objects
       @title_eval = Eval(String).new("")
@@ -79,11 +77,11 @@ module Huh
       @filtered_options = [] of Option(T)
 
       # Initialize filter input
-      @filter = Term2::Components::TextInput.new
+      @filter = Bubbles::TextInput::Model.new
       @filter.prompt = "/"
 
       # Initialize spinner
-      @spinner = Term2::Components::Spinner.new
+      @spinner = Bubbles::Spinner::Model.new
 
       # Default validation (always passes)
       @validate = Proc(Array(T), Exception | Nil).new { nil }
@@ -92,7 +90,7 @@ module Huh
       super(@accessor.get)
     end
 
-    # Value sets the value of the multi-select field using a cell
+    # Value sets the value of the multi-select field using a ref
     def value(cell : Cell(Array(T))) : self
       @accessor = PointerAccessor(Array(T)).new(cell)
       @value = @accessor.get
@@ -124,7 +122,7 @@ module Huh
 
     # TitleFunc sets the title func of the multi-select field.
     def title_func(fn : Proc(String)) : self
-      @title_eval.function = fn
+      @title_eval.function(fn)
       self
     end
 
@@ -137,7 +135,7 @@ module Huh
 
     # DescriptionFunc sets the description func of the multi-select field.
     def description_func(fn : Proc(String)) : self
-      @description_eval.function = fn
+      @description_eval.function(fn)
       self
     end
 
@@ -161,7 +159,7 @@ module Huh
 
     # OptionsFunc sets the options func of the multi-select field.
     def options_func(fn : Proc(Array(Option(T)))) : self
-      @options_eval.function = fn
+      @options_eval.function(fn)
       # If there is no height set, we should attach a static height since these
       # options are possibly dynamic.
       if @height <= 0
@@ -213,13 +211,20 @@ module Huh
     def width(width : Int32) : self
       @width = width
       @viewport.width = width
-      super
+      self
     end
 
     # Width setter (property)
     def width=(width : Int32)
       @width = width
       @viewport.width = width
+    end
+
+    # Override with_width to also set viewport width
+    def with_width(width : Int32) : self
+      super
+      @viewport.width = width
+      self
     end
 
     # Theme configuration
@@ -230,8 +235,13 @@ module Huh
 
     # Keymap configuration
     def keymap(keymap : KeyMap) : self
-      @keymap = keymap
+      @keymap = keymap.multiselect
       self
+    end
+
+    # Implement field_keymap abstract method
+    def field_keymap : Object?
+      @keymap
     end
 
     # Accessible mode configuration
@@ -242,7 +252,7 @@ module Huh
 
     # Required Field methods
 
-    def init : Term2::Cmd
+    def init : Tea::Cmd?
       @filter.init
     end
 
@@ -250,8 +260,21 @@ module Huh
       @focused
     end
 
-    def update(msg : Term2::Msg) : {Term2::Model, Term2::Cmd}
-      cmd = Term2::Cmds.none
+    def update(msg : ::Tea::Msg) : {self, Tea::Cmd?}
+      cmd = nil
+
+      if msg.is_a?(Huh::UpdateFieldMsg)
+        @title_eval.update
+        @description_eval.update
+        if @options_eval.update
+          @filtered_options = @options_eval.value
+          select_options(@accessor.get)
+          update_viewport_height
+          update_value
+          update_filtered_options if @filtering
+        end
+        return {self, nil}
+      end
 
       if @filtering
         # Delegate to filter input
@@ -261,8 +284,8 @@ module Huh
 
         # Check for escape to stop filtering
         case msg
-        when Term2::Key
-          case msg.key
+        when Tea::KeyPressMsg
+          case msg.string
           when "esc"
             stop_filtering
           end
@@ -271,14 +294,14 @@ module Huh
       end
 
       case msg
-      when Term2::Key
-        key = msg.key
+      when Tea::KeyPressMsg
+        key = msg.string
         case key
         when "up", "k"
           move_cursor(-1)
         when "down", "j"
           move_cursor(1)
-        when "space", "enter"
+        when "x", "space", "enter"
           toggle_selection
         when "/"
           start_filtering if @filterable
@@ -303,7 +326,7 @@ module Huh
       parts << title unless title.empty?
       description = description_view
       parts << description unless description.empty?
-      parts << @viewport.view.content
+      parts << @viewport.view
 
       styles.base
         .width(@width)
@@ -311,17 +334,17 @@ module Huh
         .render(parts.join("\n"))
     end
 
-    def blur : Term2::Cmd
+    def blur : Tea::Cmd?
       value = @accessor.get
       clear_filter
       @focused = false
       @error = @validate.call(value)
-      Term2::Cmds.none
+      nil
     end
 
-    def focus : Term2::Cmd
+    def focus : Tea::Cmd?
       @focused = true
-      Term2::Cmds.none
+      nil
     end
 
     def skip : Bool
@@ -333,12 +356,75 @@ module Huh
     end
 
     def key_binds : Array(KeyBinding)
-      [] of KeyBinding
+      binds = [
+        KeyBinding.new(:toggle, ["x", "space"], "toggle"),
+        KeyBinding.new(:up, ["up", "k", "ctrl+k", "ctrl+p"], "up"),
+        KeyBinding.new(:down, ["down", "j", "ctrl+j", "ctrl+n"], "down"),
+        KeyBinding.new(:submit, ["enter"], "submit"),
+      ]
+      binds << KeyBinding.new(:filter, ["/"], "filter") if @filterable
+      binds
     end
 
     def run_accessible(writer : IO, reader : IO) : Nil
-      # TODO: implement accessible mode
-      writer << "MultiSelect field accessible mode not yet implemented\n"
+      styles = active_styles
+      writer << styles.title.render(@title_eval.value) << "\n"
+
+      # List options
+      @options_eval.value.each_with_index do |option, i|
+        writer << "#{i + 1}. #{option.key}\n"
+      end
+
+      writer << "\n"
+      writer << "Choose multiple options separated by commas (e.g., 1,3,5):\n"
+
+      # Prompt for choices
+      loop do
+        input = Accessibility.prompt_string(writer, reader, "Choices: ")
+        choices = input.split(',').map(&.strip)
+
+        selected_indices = [] of Int32
+        valid = true
+
+        choices.each do |choice_str|
+          begin
+            choice = choice_str.to_i32
+            if choice < 1 || choice > @options_eval.value.size
+              writer << "Invalid choice: #{choice}. Please choose between 1 and #{@options_eval.value.size}\n"
+              valid = false
+              break
+            end
+            selected_indices << choice - 1
+          rescue
+            writer << "Invalid input: #{choice_str}. Please enter numbers separated by commas.\n"
+            valid = false
+            break
+          end
+        end
+
+        next unless valid
+
+        # Get selected values
+        selected_values = selected_indices.map { |i| @options_eval.value[i].value }
+
+        # Validate the choices
+        err = @validate.call(selected_values)
+        if err
+          writer << err.message << "\n"
+          next
+        end
+
+        # Update selection
+        @options_eval.value.each_with_index do |option, i|
+          option.selected = selected_indices.includes?(i)
+        end
+
+        selected_keys = selected_indices.map { |i| @options_eval.value[i].key }
+        writer << styles.selected_option.render("Chose: " + selected_keys.join(", ") + "\n")
+        @accessor.set(selected_values)
+        @value = @accessor.get
+        break
+      end
     end
 
     # Private methods
@@ -350,7 +436,7 @@ module Huh
       end
       # Set cursor to first selected option or 0
       @options_eval.value.each_with_index do |option, i|
-        if option.selected
+        if option.selected?
           @cursor = i
           break
         end
@@ -361,7 +447,7 @@ module Huh
     private def update_value
       selected_values = [] of T
       @options_eval.value.each do |option|
-        if option.selected
+        if option.selected?
           selected_values << option.value
         end
       end
@@ -404,7 +490,7 @@ module Huh
       if @filtering
         # Apply styles to filter text input
         apply_filter_styles
-        sb << @filter.view.content
+        sb << @filter.view
       elsif !@filter.value.empty?
         sb << styles.description.render("/" + @filter.value)
       else
@@ -430,7 +516,7 @@ module Huh
       theme = @theme || Theme.default
       focused_styles = theme.focused
       blurred_styles = theme.blurred
-      input_styles = Term2::Components::TextInput::Styles.new
+      input_styles = Bubbles::TextInput::Styles.new
 
       # Map focused styles
       input_styles.focused.text = focused_styles.text_input.text
@@ -446,9 +532,9 @@ module Huh
 
       # Map cursor style
       cursor_style = focused_styles.text_input.cursor
-      cursor_color = cursor_style.foreground
-      input_styles.cursor.color = cursor_color
-      input_styles.cursor.shape = Term2::CursorShape::Block
+      cursor_color = cursor_style.foreground_color
+      input_styles.cursor.color = cursor_color || Lipgloss.color("7")
+      input_styles.cursor.shape = Tea::CursorStyle::Block
 
       @filter.styles = input_styles
     end
@@ -457,7 +543,7 @@ module Huh
       sb = String::Builder.new
       @filtered_options.each_with_index do |option, i|
         cursor = @cursor == i
-        selected = option.selected
+        selected = option.selected?
         sb << render_option(option, cursor, selected)
         sb << "\n" if i < @filtered_options.size - 1
       end
@@ -511,16 +597,16 @@ module Huh
 
       option = @filtered_options[@cursor]
       # Check limit constraint
-      if !option.selected && @limit > 0 && num_selected >= @limit
+      if !option.selected? && @limit > 0 && num_selected >= @limit
         return
       end
 
       # Toggle selection in both filtered and original options
-      option.selected = !option.selected
+      option.selected = !option.selected?
       # Also update the original option
       @options_eval.value.each_with_index do |orig_option, i|
         if orig_option.key == option.key
-          @options_eval.value[i].selected = option.selected
+          @options_eval.value[i].selected = option.selected?
           break
         end
       end
@@ -558,7 +644,7 @@ module Huh
     private def num_filtered_selected : Int32
       count = 0
       @filtered_options.each do |option|
-        count += 1 if option.selected
+        count += 1 if option.selected?
       end
       count
     end
@@ -569,7 +655,7 @@ module Huh
 
       any_unselected = false
       @filtered_options.each do |option|
-        if !option.selected
+        if !option.selected?
           any_unselected = true
           break
         end
@@ -587,7 +673,7 @@ module Huh
     private def num_selected : Int32
       count = 0
       @options_eval.value.each do |option|
-        count += 1 if option.selected
+        count += 1 if option.selected?
       end
       count
     end

@@ -3,7 +3,7 @@ module Huh
   class Option(T)
     property key : String
     property value : T
-    property selected : Bool = false
+    property? selected : Bool = false
 
     # Creates a new select option
     def initialize(@key : String, @value : T, @selected : Bool = false)
