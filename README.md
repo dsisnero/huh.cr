@@ -35,11 +35,67 @@ A Crystal port of the [charmbracelet/huh](https://github.com/charmbracelet/huh) 
 2. Run `shards install`
 
 3. Basic usage:
+
     ```crystal
     require "huh"
 
-    # Coming soon - API will follow the Go version's patterns
+    # Create a simple form using Cell for mutable values
+    name = Huh.cell("")
+    confirmed = Huh.cell(false)
+
+    form = Huh.new_form(
+      Huh.new_group(
+        Huh.new_input
+          .title("What's your name?")
+          .value(name),
+        Huh.new_confirm
+          .title("Are you sure?")
+          .value(confirmed)
+      )
+    )
+
+    form.run
+    puts "Hello, #{name.value}!" if confirmed.value
     ```
+
+## Value Binding with Cell
+
+Huh uses `Cell` containers for mutable value binding. Since Crystal's `String` and other basic types are value types (structs), we need a wrapper to allow fields to update them.
+
+### Using `Huh.cell()`
+
+```crystal
+# Create mutable references
+name = Huh.cell("")           # Cell(String)
+age = Huh.cell(0)             # Cell(Int32)
+active = Huh.cell(false)      # Cell(Bool)
+tags = Huh.cell([] of String) # Cell(Array(String))
+
+# Use with fields
+field.value(name)
+
+# Access values after form completion
+form.run
+puts "Name: #{name.value}"
+```
+
+### Why Cell instead of pointers?
+
+- **Type-safe** - Compile-time type checking
+- **Crystal-idiomatic** - No raw pointer arithmetic
+- **Clean API** - `Huh.cell("")` is readable
+- **Go compatibility** - Also supports `Pointer(T)` for Go parity
+
+### Field Types and Cell Types
+
+| Field Type | Cell Type | Example |
+|------------|----------|---------|
+| `Input` | `Cell(String)` | `Huh.cell("")` |
+| `Text` | `Cell(String)` | `Huh.cell("")` |
+| `Select(T)` | `Cell(T)` | `Huh.cell("")` (where T is selected value type) |
+| `MultiSelect(T)` | `Cell(Array(T))` | `Huh.cell([] of String)` |
+| `Confirm` | `Cell(Bool)` | `Huh.cell(false)` |
+| `FilePicker` | `Cell(String)` | `Huh.cell("")` |
 
 ## Features
 

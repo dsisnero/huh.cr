@@ -1,4 +1,7 @@
-.PHONY: install update format lint test markdown markdown-check clean
+.PHONY: install update format lint test markdown markdown-check build-examples clean
+
+EXAMPLE_SOURCES := $(wildcard examples/*.cr)
+EXAMPLE_BINS := $(patsubst examples/%.cr,bin/examples/%,$(EXAMPLE_SOURCES))
 
 install:
 	BEADS_DIR=$$(pwd)/.beads shards install
@@ -22,5 +25,12 @@ markdown:
 markdown-check:
 	rumdl check . --check
 
+build-examples: $(EXAMPLE_BINS)
+
+bin/examples/%: examples/%.cr
+	@mkdir -p bin/examples
+	@echo "Building $< -> $@"
+	@CRYSTAL_CACHE_DIR=$(PWD)/.crystal-cache crystal build "$<" -o "$@"
+
 clean:
-	rm -rf temp/**
+	rm -rf temp/* bin/examples/* bin/*.dwarf
