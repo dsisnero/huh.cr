@@ -26,9 +26,9 @@ Pass criteria:
 
 Goal: ensure every exported Go API item and Go test has a parity status.
 
-### 3.1 Install parity scripts in this repo
+### 3.1 Parity scripts in this repo
 
-Copy the scripts referenced by the `go-to-crystal-parity` workflow into `bin/`:
+Use the parity scripts under `bin/`:
 
 - `generate_go_port_inventory.sh`
 - `check_go_port_inventory.sh`
@@ -40,7 +40,7 @@ Copy the scripts referenced by the `go-to-crystal-parity` workflow into `bin/`:
 
 ### 3.2 Generate manifests
 
-Assuming upstream Go source lives under `vendor/` (set exact path):
+Assuming upstream Go source lives under `vendor/huh/` (set exact path):
 
 ```bash
 mkdir -p plans/inventory

@@ -2,7 +2,7 @@
 upstream_repo: "https://github.com/charmbracelet/huh"
 pinned_revision: "5c5971ef3aebe0ae2faa3f9b94586d71aa5568ea"
 import_mode: "submodule"
-upstream_submodule_path: "vendor"
+upstream_submodule_path: "vendor/huh"
 ---
 
 # Porting Parity
@@ -12,7 +12,7 @@ upstream_submodule_path: "vendor"
 - Repository: `https://github.com/charmbracelet/huh`
 - Pinned revision: `5c5971ef3aebe0ae2faa3f9b94586d71aa5568ea`
 - Import mode: `submodule`
-- Upstream path: `vendor`
+- Upstream path: `vendor/huh`
 
 ## Parity Scope
 
@@ -21,14 +21,14 @@ upstream_submodule_path: "vendor"
 | `huh.go` | `src/huh.cr` | Complete | Main entry point |
 | `field_*.go` | `src/huh/field.cr` | Complete | Base field functionality |
 | `field_input.go` | `src/huh/fields/input.cr` | Complete | Text input field |
-| `field_select.go` | `src/huh/fields/select.cr` | Partial | Selection parity present; page navigation and viewport scrolling still differ |
-| `field_multiselect.go` | `src/huh/fields/multiselect.cr` | Partial | Core selection/filtering ported; viewport scrolling behavior still differs |
+| `field_select.go` | `src/huh/fields/select.cr` | Complete | Selection, paging, and viewport parity implemented |
+| `field_multiselect.go` | `src/huh/fields/multiselect.cr` | Complete | Selection/filtering, paging, and submit navigation implemented |
 | `field_confirm.go` | `src/huh/fields/confirm.cr` | Complete | Yes/No confirmation |
-| `field_note.go` | `src/huh/fields/note.cr` | Partial | Rendering parity covered; interactive key handling and dynamic update behavior still limited |
+| `field_note.go` | `src/huh/fields/note.cr` | Complete | Rendering and interactive key handling parity implemented |
 | `field_text.go` | `src/huh/fields/text.cr` | Complete | Multi-line text input |
-| `field_filepicker.go` | `src/huh/fields/filepicker.cr` | Partial | Field shape exists; selected-path propagation parity incomplete |
+| `field_filepicker.go` | `src/huh/fields/filepicker.cr` | Complete | Selected-path propagation wired via Bubbles filepicker selection APIs |
 | `form.go` | `src/huh/form.cr` | Complete | Form orchestration |
-| `group.go` | `src/huh/form.cr` (`Huh::Group`) | Partial | Group core behavior ported; hidden-group APIs and some cross-group transitions differ |
+| `group.go` | `src/huh/form.cr` (`Huh::Group`) | Complete | Hidden-group APIs and hidden-group navigation implemented |
 | `theme.go` | `src/huh/theme.cr` | Complete | Styling and theming |
 | `keymap.go` | `src/huh/keymap.cr` | Complete | Keymap definitions ported for all supported fields |
 | `layout.go` | `src/huh/layout.cr` | Complete | Default/stack/columns/grid layouts implemented |
@@ -56,13 +56,7 @@ upstream_submodule_path: "vendor"
 
 ## Known Deviations
 
-- Hidden-group APIs (`hide`, `hide_func`) are not implemented in `Huh::Group`.
-- Form timeout/context abort (`RunWithContext` style behavior) is not implemented.
-- Select/multiselect page navigation parity (`g`, `G`, `ctrl+d`, `ctrl+u`) is incomplete.
-- File picker does not yet propagate selected path from the internal Bubbles model.
-- Note field interactive key handling and dynamic update message handling are minimal.
-- Spinner interactive runtime path (`run_interactive`) is intentionally not implemented yet.
-- Standalone `FieldBase#run` is currently unimplemented.
+- `RunWithContext` is not exposed as a separate public API. Equivalent timeout behavior is provided via `Form#with_timeout`.
 
 ## Verification Commands
 
@@ -81,7 +75,7 @@ rg -n "\bpending\b|xit\(|xdescribe\(|xcontext\(" spec src
 
 # Compare with Go golden files
 # (Run Go tests to regenerate if needed)
-cd vendor && go test -v ./...
+cd vendor/huh && go test -v ./...
 ```
 
 ## Updating Upstream
@@ -89,17 +83,17 @@ cd vendor && go test -v ./...
 1. Update submodule to new commit:
 
    ```bash
-   cd vendor
+   cd vendor/huh
    git checkout <new-commit>
    cd ..
-   git add vendor
+   git add vendor/huh
    git commit -m "chore: update upstream to <commit-hash>"
    ```
 
 2. Regenerate golden files:
 
    ```bash
-   cd vendor
+   cd vendor/huh
    go test -v ./... 2>&1 | grep -A5 "golden"  # Check output
    # Copy updated golden files to testdata/go/
    ```

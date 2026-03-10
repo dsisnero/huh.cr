@@ -80,7 +80,7 @@ make clean  # Removes temp/** files
 
 When porting Go functionality:
 
-1. **Reference upstream**: Check `vendor/` submodule for Go implementation
+1. **Reference upstream**: Check `vendor/huh/` submodule for Go implementation
 2. **Create test first**: Port Go test to Crystal spec
 3. **Implement behavior**: Translate Go logic to Crystal preserving semantics
 4. **Verify parity**: Compare output with Go golden files

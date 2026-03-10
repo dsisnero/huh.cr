@@ -50,23 +50,27 @@ This document outlines the strategy for porting the [charmbracelet/huh](https://
 ## Phase 1: Foundation (Weeks 1-2)
 
 ### 1.1 Setup Test Infrastructure
+
 - Create test harness that runs Go tests and captures golden outputs
 - Establish comparison utilities for ANSI sequences
 - Set up pseudo-terminal (pty) testing environment
 
 ### 1.2 Implement Core Abstractions
+
 - **Field Interface**: `Field(T)` with `init`, `update`, `view`, `run_accessible`
 - **Accessor Pattern**: Generic `Accessor(T)` for value storage
 - **Selector**: Generic navigation for groups and fields
 - **Eval System**: Cached evaluation with binding hashing
 
 ### 1.3 Create Minimal TUI Framework
+
 - **Message System**: `Msg` base class, `KeyMsg`, `WindowSizeMsg`
 - **Command Pattern**: `Cmd` as `Proc(Msg?)` or lambda
 - **Program Loop**: Event handling, rendering cycle, resize handling
 - **Viewport**: Basic scrolling container
 
 ### 1.4 Implement Basic Styling Engine
+
 - **Style Class**: Color, border, padding, margin, alignment
 - **Adaptive Colors**: Terminal color detection
 - **Rendering Pipeline**: Combine styles hierarchically
@@ -74,21 +78,25 @@ This document outlines the strategy for porting the [charmbracelet/huh](https://
 ## Phase 2: First Field Implementation (Weeks 3-4)
 
 ### 2.1 Input Field
+
 - Single-line text input with cursor
 - Character limit, echo modes (normal, password, none)
 - Suggestions and validation
 - Accessible mode support
 
 ### 2.2 Validation System
+
 - `Validate` callbacks with error display
 - Built-in validators: not empty, min/max length, one-of
 
 ### 2.3 Basic Form Navigation
+
 - Simple form with single group
 - Next/previous field navigation
 - Submit/abort handling
 
 ### 2.4 Golden Test Verification
+
 - Capture Go Input field outputs
 - Ensure Crystal renders identical ANSI sequences
 - Test with various terminal sizes
@@ -96,30 +104,36 @@ This document outlines the strategy for porting the [charmbracelet/huh](https://
 ## Phase 3: Field Types Expansion (Weeks 5-8)
 
 ### 3.1 Select Field
+
 - Single option selection from list
 - Filtering, inline mode
 - Option display with selected indicator
 - Dynamic options via `OptionsFunc`
 
 ### 3.2 MultiSelect Field
+
 - Multiple option selection
 - Select all/none, limit constraints
 - Toggle behavior
 
 ### 3.3 Confirm Field
+
 - Yes/No toggle with custom labels
 - Simple keyboard navigation
 
 ### 3.4 Text Field
+
 - Multi-line text area
 - External editor support (via $EDITOR)
 - Character limit with counter
 
 ### 3.5 Note Field
+
 - Read-only informational display
 - Optional "Next" button
 
 ### 3.6 FilePicker Field
+
 - File/directory selection
 - Filtering by extension
 - Navigation through filesystem
@@ -127,21 +141,25 @@ This document outlines the strategy for porting the [charmbracelet/huh](https://
 ## Phase 4: Advanced Features (Weeks 9-12)
 
 ### 4.1 Theming System
+
 - **Theme Structure**: Hierarchical styles (form, group, field, focused/blurred)
 - **Built-in Themes**: Charm, Dracula, Base16, Catppuccin, Default
 - **Theme Application**: Propagation and override rules
 
 ### 4.2 Layouts
+
 - **Layout Interface**: `View(Form)` and `GroupWidth` methods
 - **Built-in Layouts**: Default (paged), Stack, Columns, Grid
 - **Viewport Integration**: Scrolling within layouts
 
 ### 4.3 Dynamic Forms
+
 - **Binding System**: `TitleFunc`, `DescriptionFunc`, `OptionsFunc`
 - **Caching**: Hash-based invalidation
 - **Reactive Updates**: Automatic re-render on binding changes
 
 ### 4.4 Accessibility Mode
+
 - **Detection**: Environment variable or explicit flag
 - **Prompt Functions**: Direct IO prompting for each field type
 - **Integration**: `run_accessible` method on all fields
@@ -149,21 +167,25 @@ This document outlines the strategy for porting the [charmbracelet/huh](https://
 ## Phase 5: Polish and Integration (Weeks 13-16)
 
 ### 5.1 Key Mapping
+
 - Customizable key bindings
 - Context-sensitive keys (first/last field, group boundaries)
 - Help key display
 
 ### 5.2 Error Handling
+
 - Validation error display
 - Timeout handling
 - Graceful abort
 
 ### 5.3 Performance Optimization
+
 - Efficient re-rendering
 - Memory management for large forms
 - Async operations (spinners, file loading)
 
 ### 5.4 Documentation
+
 - API documentation with examples
 - Migration guide from Go version
 - Tutorials and cookbook
@@ -171,7 +193,8 @@ This document outlines the strategy for porting the [charmbracelet/huh](https://
 ## Testing Strategy
 
 ### Golden File Verification
-```
+
+```text
 # Process for each feature:
 1. Run Go tests to capture reference outputs
 2. Store in `testdata/go/` directory
@@ -181,6 +204,7 @@ This document outlines the strategy for porting the [charmbracelet/huh](https://
 ```
 
 ### Test Categories
+
 1. **Unit Tests**: Individual components in isolation
 2. **Integration Tests**: Complete forms with simulated input
 3. **Accessibility Tests**: Screen reader mode
@@ -189,6 +213,7 @@ This document outlines the strategy for porting the [charmbracelet/huh](https://
 6. **Dynamic Tests**: Forms with reactive bindings
 
 ### Test Tools Needed
+
 - **PTY Emulation**: For reproducible terminal interactions
 - **ANSI Parser**: To compare escape sequences
 - **Screenshot Comparison**: Visual diffing of terminal output
@@ -197,23 +222,27 @@ This document outlines the strategy for porting the [charmbracelet/huh](https://
 ## Crystal-Specific Considerations
 
 ### Generics Usage
+
 - Fields: `Field(T)` where T is value type
 - Select: `Select(T)` for option values
 - Accessor: `Accessor(T)` interface
 - Use Crystal's generic system with type restrictions
 
 ### Error Handling
+
 - Use Crystal's exception system
 - Return `nil` or raise based on context
 - Maintain Go's error return patterns where appropriate
 
 ### Concurrency
+
 - Use `spawn` and `Channel` for async operations
 - Implement `Cmd` pattern with fiber-based execution
 - Handle terminal signals gracefully
 
 ### File Structure
-```
+
+```text
 src/
 ├── huh/
 │   ├── form.cr
@@ -258,16 +287,19 @@ src/
 ## Risk Assessment
 
 ### High Risk
+
 1. **ANSI Sequence Parity**: Exact match required for golden files
 2. **Terminal Compatibility**: Different terminal emulator behaviors
 3. **Performance**: Real-time rendering at 60fps
 
 ### Medium Risk
+
 1. **Generic System Limitations**: Crystal's generics vs Go's
 2. **Concurrency Model**: Fiber-based vs goroutine-based async
 3. **External Dependencies**: PTY handling, termios compatibility
 
 ### Low Risk
+
 1. **Business Logic**: Form navigation, validation
 2. **Data Structures**: Options, themes, layouts
 3. **API Design**: Fluent interface patterns

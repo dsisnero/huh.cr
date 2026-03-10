@@ -42,7 +42,7 @@ Format: `<type>/<issue-number>-<short-kebab-description>`
 - [ ] Lint/format checks pass (`make format`, `make lint`)
 - [ ] All tests pass (`make test`)
 - [ ] Golden files match Go output (if porting changes)
-- [ ] Upstream parity verified (check `vendor/` submodule)
+- [ ] Upstream parity verified (check `vendor/huh/` submodule)
 
 ## Review Process
 

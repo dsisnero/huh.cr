@@ -106,7 +106,7 @@ fastmod --help
 
 ## External Dependencies
 
-- **Upstream Go library**: `vendor/` submodule pinned to specific commit
+- **Upstream Go library**: `vendor/huh/` submodule pinned to specific commit
 - **Crystal shards**: lipgloss, golden, teatest, bubbles for Bubble Tea TUI framework
 - **Development tools**: ameba for linting, rumdl for markdown formatting
 
@@ -118,7 +118,7 @@ When something breaks:
 2. Run `make clean` to clear artifacts before re-running tests
 3. Compare output with Go golden files in `testdata/go/`
 4. Use `CRYSTAL_CACHE_DIR=$PWD/.crystal-cache` for consistent caching
-5. Consult upstream Go implementation in `vendor/` for behavioral details
+5. Consult upstream Go implementation in `vendor/huh/` for behavioral details
 
 ## Conventions
 

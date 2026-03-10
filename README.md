@@ -141,7 +141,7 @@ See [Development Guide](docs/development.md) for full setup instructions.
 
 ## Porting Status
 
-This library is actively being ported from the Go implementation. The Go source code is available as a submodule in `./vendor/` for reference.
+This library is actively being ported from the Go implementation. The Go source code is available as a submodule in `./vendor/huh/` for reference.
 
 **Current goals:**
 
