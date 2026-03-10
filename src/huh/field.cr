@@ -89,8 +89,9 @@ module Huh
 
     # Run the field as a standalone prompt
     def run : Nil
-      # TODO: Implement standalone field execution
-      raise "Not implemented yet"
+      program = Tea::Program.new(Huh::RuntimeModel(FieldBase).new(self))
+      _model, err = program.run
+      raise err if err
     end
 
     # Get the field's key

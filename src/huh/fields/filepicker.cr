@@ -327,32 +327,24 @@ module Huh
         return {self, nil}
       end
 
-      case msg
-      when Tea::KeyPressMsg
-        key = msg.string
-        if @focused
-          # Handle filepicker-specific keys
-          case key
-          when "enter"
-            # TODO: Get selected file from filepicker
-            # For now, just move to next field
-            return {self, Tea.batch([-> : ::Tea::Msg? { NextFieldMsg.new }])}
-          when "esc"
-            @picking = false
-            return {self, nil}
-          when "/"
-            @picking = !@picking
-            return {self, nil}
-          end
-        end
-      end
-
       # Delegate to filepicker component
       filepicker, cmd = @filepicker.update(msg)
       @filepicker = filepicker.as(Bubbles::Filepicker::Model)
 
-      # TODO: Update value when filepicker has selection
-      # Currently Bubbles filepicker doesn't expose selected file directly
+      did_select_file, selected_path = @filepicker.did_select_file(msg)
+      if did_select_file
+        @accessor.set(selected_path)
+        @value = selected_path
+        @error = @validate.call(selected_path)
+        return {self, cmd} if @error
+        return {self, Tea.batch([cmd, -> : ::Tea::Msg? { Huh.next_field }])}
+      end
+
+      did_select_disabled, disabled_path = @filepicker.did_select_disabled_file(msg)
+      if did_select_disabled
+        @error = Exception.new("File is not selectable: #{disabled_path}")
+        return {self, cmd}
+      end
 
       {self, cmd}
     end

@@ -36,6 +36,7 @@ module Huh
     @accessible : Bool = false
     @state : Symbol = :normal
     @layout : Layout::LayoutBase = Layout::LAYOUT_DEFAULT
+    @timeout : Time::Span = 0.seconds
 
     # Creates a new form with the given groups.
     #
@@ -54,15 +55,17 @@ module Huh
 
     def init : Tea::Cmd?
       cmds = [] of Tea::Cmd?
+      first_visible_group = find_next_visible_group(0)
       @selector.range do |i, group|
-        if i == 0
-          group.active = true
-        end
+        group.active = (i == first_visible_group)
         cmds << group.init
         true
       end
       # Update field positions before initializing
       update_field_positions
+      if first_visible_group >= 0
+        @selector.set_index(first_visible_group)
+      end
       Tea.batch(cmds)
     end
 
@@ -71,9 +74,21 @@ module Huh
       first_group = 0
       last_group = @selector.total - 1
 
-      # For now, we don't have hidden groups, so first_group and last_group
-      # are just 0 and total-1
-      # TODO: Implement hidden groups logic when we add group hiding
+      @selector.range do |_, group|
+        if !group_hidden?(group)
+          next false
+        end
+        first_group += 1
+        true
+      end
+
+      @selector.reverse_range do |_, group|
+        if !group_hidden?(group)
+          next false
+        end
+        last_group -= 1
+        true
+      end
 
       @selector.range do |group_index, group|
         # Determine first non-skippable field
@@ -117,19 +132,18 @@ module Huh
     def update(msg : ::Tea::Msg) : {self, Tea::Cmd?}
       case msg
       when NextGroupMsg
-        # Move to next non-hidden group
-        if @selector.on_last?
+        if (next_visible = find_next_visible_group(@selector.index + 1)) < 0
           @state = :completed
           return {self, Tea.quit}
         end
-        @selector.next
+        @selector.set_index(next_visible)
         @selector.selected.active = true
         {self, @selector.selected.init}
       when PrevGroupMsg
-        if @selector.on_first?
+        if (prev_visible = find_prev_visible_group(@selector.index - 1)) < 0
           return {self, nil}
         end
-        @selector.prev
+        @selector.set_index(prev_visible)
         @selector.selected.active = true
         {self, @selector.selected.init}
       else
@@ -138,6 +152,25 @@ module Huh
         group = @selector.selected
         updated, cmd = group.update(msg)
         @selector.set(idx, updated.as(Group))
+
+        if msg.is_a?(Tea::KeyPressMsg)
+          update_field_positions
+          if group_hidden?(@selector.selected)
+            if (next_visible = find_next_visible_group(@selector.index + 1)) >= 0
+              @selector.set_index(next_visible)
+              @selector.selected.active = true
+              return {self, @selector.selected.init}
+            elsif (prev_visible = find_prev_visible_group(@selector.index - 1)) >= 0
+              @selector.set_index(prev_visible)
+              @selector.selected.active = true
+              return {self, @selector.selected.init}
+            else
+              @state = :completed
+              return {self, Tea.quit}
+            end
+          end
+        end
+
         {self, cmd}
       end
     end
@@ -163,6 +196,11 @@ module Huh
       self
     end
 
+    def with_timeout(timeout : Time::Span) : self
+      @timeout = timeout
+      self
+    end
+
     # Getter for selector
     def selector : Selector(Group)
       @selector
@@ -171,11 +209,42 @@ module Huh
     # Run runs the form as a standalone program.
     def run : Nil
       if @accessible
+        if @timeout > 0.seconds
+          raise Huh::TimeoutUnsupportedError.new("timeout is not supported in accessible mode")
+        end
         run_accessible
         return
       end
+
+      options = [] of Tea::ProgramOption
+      ctx = nil.as(Tea::ExecutionContext?)
+      if @timeout > 0.seconds
+        context = Tea::ExecutionContext.new
+        ctx = context
+        options << Tea.with_context(context)
+      end
+
       program = Tea::Program.new(Huh::RuntimeModel(Form).new(self))
-      program.run
+      options.each(&.call(program))
+
+      if context = ctx
+        spawn do
+          sleep @timeout
+          context.cancel
+        end
+      end
+
+      _model, err = program.run
+      return unless err
+
+      case err
+      when Tea::InterruptedError
+        raise Huh::UserAbortedError.new("user aborted")
+      when Tea::ProgramKilledError
+        raise Huh::TimeoutError.new("timeout")
+      else
+        raise err
+      end
     end
 
     # WithAccessible runs the form using accessible prompt mode.
@@ -186,11 +255,36 @@ module Huh
 
     # RunAccessible runs the form in accessible mode (non-interactive).
     def run_accessible : Nil
+      first_visible_group = find_next_visible_group(0)
       @selector.range do |i, group|
-        group.active = (i == 0)
-        group.run_accessible(STDOUT, STDIN)
+        group.active = (i == first_visible_group)
+        unless group_hidden?(group)
+          group.run_accessible(STDOUT, STDIN)
+        end
         true
       end
+    end
+
+    private def group_hidden?(group : Group) : Bool
+      group.hidden?
+    end
+
+    private def find_next_visible_group(start_index : Int32) : Int32
+      i = start_index
+      while i < @selector.total
+        return i unless group_hidden?(@selector.get(i))
+        i += 1
+      end
+      -1
+    end
+
+    private def find_prev_visible_group(start_index : Int32) : Int32
+      i = start_index
+      while i >= 0
+        return i unless group_hidden?(@selector.get(i))
+        i -= 1
+      end
+      -1
     end
   end
 
@@ -250,6 +344,7 @@ module Huh
     @theme : Theme?
     @active : Bool = false
     @help : Bubbles::Help::Model
+    @hide : Proc(Bool)?
     property? active : Bool
 
     def initialize(*fields : FieldBase)
@@ -257,6 +352,7 @@ module Huh
       @width = 80
       @theme = nil
       @help = Bubbles::Help::Model.new
+      @hide = nil
       # Propagate default width to all fields
       @selector.items.each do |field|
         field.with_width(@width)
@@ -270,6 +366,15 @@ module Huh
         cmds << field.init
         true
       end
+
+      if @selector.selected.skip
+        if @selector.on_last?
+          return Tea.batch(prev_field)
+        elsif @selector.on_first?
+          return Tea.batch(next_field)
+        end
+      end
+
       if @active
         cmds << @selector.selected.focus
       end
@@ -426,6 +531,24 @@ module Huh
     def with_theme(theme : Theme) : self
       @theme = theme
       self
+    end
+
+    def hide(hidden : Bool) : self
+      @hide = -> { hidden }
+      self
+    end
+
+    def hide_func(&block : -> Bool) : self
+      @hide = block
+      self
+    end
+
+    def hidden? : Bool
+      if hide = @hide
+        hide.call
+      else
+        false
+      end
     end
 
     # RunAccessible runs the group in accessible mode.

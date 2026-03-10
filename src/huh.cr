@@ -52,6 +52,18 @@ require "./huh/keymap"
 module Huh
   VERSION = "0.1.0"
 
+  # Error raised when a form run is interrupted by the user.
+  class UserAbortedError < Exception
+  end
+
+  # Error raised when a form run exceeds configured timeout.
+  class TimeoutError < Exception
+  end
+
+  # Error raised when timeout is used in accessible mode.
+  class TimeoutUnsupportedError < Exception
+  end
+
   # Use bubbletea v2.0.0 for terminal UI
   alias Tea = Bubbletea
   alias Cmd = Tea::Cmd?

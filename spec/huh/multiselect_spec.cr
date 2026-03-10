@@ -38,5 +38,48 @@ module Huh
       sel = Huh.new_multiselect(String).filterable(false)
       sel.filterable?.should be_false
     end
+
+    it "submits selection and advances with enter" do
+      first = Huh.new_multiselect(String)
+        .options(Huh.new_options("A", "B", "C", "D"))
+      second = Huh.new_input.title("Next field")
+      form = Huh.new_form(Huh.new_group(first, second))
+      form.init
+
+      model, _ = form.update(Tea.key('G'))
+      form = model
+      model, _ = form.update(Tea.key(' '))
+      form = model
+      model, cmd = form.update(Tea.key(::Tea::KeyEnter))
+      form = model
+      if cmd
+        if msg = cmd.call
+          model, _ = form.update(msg)
+          form = model
+        end
+      end
+
+      first.get_value.should eq(["D"])
+      form.selector.selected.selector.index.should eq(1)
+    end
+
+    it "supports goto top/bottom and half-page movement" do
+      sel = Huh.new_multiselect(String)
+        .height(4)
+        .options(Huh.new_options("A", "B", "C", "D", "E"))
+      sel.init
+
+      sel.update(Tea.key('G'))
+      sel.update(Tea.key(' '))
+      sel.get_value.should eq(["E"])
+
+      sel.update(Tea.key('g'))
+      sel.update(Tea.key(' '))
+      sel.get_value.sort.should eq(["A", "E"])
+
+      sel.update(Tea.key('d', Tea::ModCtrl))
+      sel.update(Tea.key(' '))
+      sel.get_value.sort.should eq(["A", "C", "E"])
+    end
   end
 end

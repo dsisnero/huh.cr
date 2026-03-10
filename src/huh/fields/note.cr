@@ -115,9 +115,22 @@ module Huh
       if msg.is_a?(Huh::UpdateFieldMsg)
         @title_eval.update
         @description_eval.update
+        return {self, nil}
       end
 
-      # TODO: Handle key events for navigation
+      case msg
+      when Tea::KeyPressMsg
+        case msg.string
+        when "shift+tab"
+          return {self, -> : ::Tea::Msg? { Huh.prev_field }}
+        when "enter", "tab"
+          return {self, -> : ::Tea::Msg? { Huh.next_field }}
+        else
+          # Notes advance on any keypress in interactive mode, matching Go behavior.
+          return {self, -> : ::Tea::Msg? { Huh.next_field }}
+        end
+      end
+
       {self, nil}
     end
 
@@ -168,7 +181,19 @@ module Huh
     end
 
     def key_binds : Array(KeyBinding)
-      [] of KeyBinding
+      [
+        KeyBinding.new(:prev, ["shift+tab"], "back"),
+        KeyBinding.new(:submit, ["enter"], "submit"),
+        KeyBinding.new(:next, ["tab"], "next"),
+      ]
+    end
+
+    def with_position(position : FieldPosition) : self
+      super
+      if position.first_field && position.last_field
+        @skip = false
+      end
+      self
     end
 
     def error : Exception?

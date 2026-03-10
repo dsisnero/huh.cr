@@ -279,7 +279,7 @@ module Huh
       form.init
 
       form = Huh.apply(form, Tea.key(::Tea::KeyUp))
-      Ansi.strip(form.view).should contain("> One")
+      Ansi.strip(form.view).should contain("> Four")
 
       4.times { form = Huh.apply(form, Tea.key(::Tea::KeyDown)) }
       Ansi.strip(form.view).should contain("> Four")
@@ -301,8 +301,6 @@ module Huh
       view.should contain("Choose any file")
 
       field.zoom.should be_false
-      form = Huh.apply(form, Huh.keypress('/'))
-      field.zoom.should be_true
       form = Huh.apply(form, Tea.key(::Tea::KeyEsc))
       field.zoom.should be_false
     end
@@ -352,7 +350,7 @@ module Huh
       Ansi.strip(form.view).should contain("First")
     end
 
-    it "ports TestNote (note rendering and no-op key update)" do
+    it "ports TestNote (note rendering and key update behavior)" do
       note = Huh::Note.new
         .title("Information")
         .description("*bold* _italic_ `code`")
@@ -368,7 +366,8 @@ module Huh
       view.should contain("Continue")
 
       _, cmd = note.update(Huh.keypress('x'))
-      cmd.should be_nil
+      cmd.should_not be_nil
+      cmd.not_nil!.call.should be_a(Huh::NextFieldMsg)
     end
 
     it "ports TestDynamicHelp (help footer updates with field focus)" do
@@ -391,7 +390,7 @@ module Huh
       form = Huh.new_form(Huh.new_group(skipped, input))
       form.init
 
-      form.selector.selected.selector.index.should eq(0)
+      form.selector.selected.selector.index.should eq(1)
       form = Huh.apply(form, Huh.next_field)
       form.selector.selected.selector.index.should eq(1)
       input.position.not_nil!.first_field.should be_true

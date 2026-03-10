@@ -246,8 +246,9 @@ module Huh
         help: Bubbles::Key::Help.new(key: "ctrl+a", desc: "select all")
       )
       @select_none = Bubbles::Key::Binding.new(
-        keys: ["ctrl+d"],
-        help: Bubbles::Key::Help.new(key: "ctrl+d", desc: "select none")
+        keys: ["ctrl+a"],
+        help: Bubbles::Key::Help.new(key: "ctrl+a", desc: "select none"),
+        disabled: true
       )
     end
   end

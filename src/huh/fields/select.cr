@@ -328,21 +328,27 @@ module Huh
 
       case msg
       when Tea::KeyPressMsg
-        key = msg.string
-        case key
-        when "up", "k"
-          move_selection(-1) unless @inline
-        when "down", "j"
-          move_selection(1) unless @inline
-        when "left", "h"
-          move_selection(-1) if @inline
-        when "right", "l"
-          move_selection(1) if @inline
-        when "/"
+        if key_in?(msg, "up", "k", "ctrl+k", "ctrl+p")
+          move_selection(-1, wrap: true)
+        elsif key_in?(msg, "down", "j", "ctrl+j", "ctrl+n")
+          move_selection(1, wrap: true)
+        elsif key_in?(msg, "left", "h")
+          move_selection(-1, wrap: true) if @inline
+        elsif key_in?(msg, "right", "l")
+          move_selection(1, wrap: true) if @inline
+        elsif key_in?(msg, "home", "g")
+          goto_top
+        elsif key_in?(msg, "end", "G")
+          goto_bottom
+        elsif key_in?(msg, "ctrl+u")
+          half_page_up
+        elsif key_in?(msg, "ctrl+d")
+          half_page_down
+        elsif key_in?(msg, "/")
           start_filtering
-        when "enter"
+        elsif key_in?(msg, "enter", "tab")
           cmd = submit_selection
-        when "esc"
+        elsif key_in?(msg, "esc")
           clear_filter
         end
       end
@@ -478,7 +484,7 @@ module Huh
       offset = 0
 
       @viewport.height = Math.max(MIN_HEIGHT, @height - offset)
-      @viewport.y_offset = @selected
+      @viewport.y_offset = @viewport.y_offset.clamp(0, Math.max(0, @filtered_options.size - 1))
     end
 
     private def clear_filter
@@ -618,14 +624,55 @@ module Huh
       end
     end
 
-    private def move_selection(delta : Int32)
+    private def move_selection(delta : Int32, wrap : Bool = false)
+      return if @filtered_options.empty?
+
       new_index = @selected + delta
-      if new_index >= 0 && new_index < @filtered_options.size
+
+      if wrap
+        if new_index < 0
+          @selected = @filtered_options.size - 1
+        elsif new_index >= @filtered_options.size
+          @selected = 0
+        else
+          @selected = new_index
+        end
+      elsif new_index >= 0 && new_index < @filtered_options.size
         @selected = new_index
-        update_value
-        # Adjust viewport to keep selection visible
-        ensure_selection_visible
       end
+
+      update_value
+      ensure_selection_visible
+    end
+
+    private def goto_top
+      return if @filtered_options.empty?
+      @selected = 0
+      update_value
+      ensure_selection_visible
+    end
+
+    private def goto_bottom
+      return if @filtered_options.empty?
+      @selected = @filtered_options.size - 1
+      update_value
+      ensure_selection_visible
+    end
+
+    private def half_page_up
+      return if @filtered_options.empty?
+      step = Math.max(1, @viewport.height // 2)
+      @selected = Math.max(0, @selected - step)
+      update_value
+      ensure_selection_visible
+    end
+
+    private def half_page_down
+      return if @filtered_options.empty?
+      step = Math.max(1, @viewport.height // 2)
+      @selected = Math.min(@filtered_options.size - 1, @selected + step)
+      update_value
+      ensure_selection_visible
     end
 
     private def start_filtering
@@ -660,10 +707,23 @@ module Huh
       end
       # Ensure selected index stays within bounds
       @selected = @selected.clamp(0, Math.max(0, @filtered_options.size - 1))
+      ensure_selection_visible
     end
 
     private def ensure_selection_visible
-      # TODO: adjust viewport y_offset to keep selected option visible
+      return if @filtered_options.empty?
+
+      if @selected < @viewport.y_offset
+        @viewport.y_offset = @selected
+      elsif @selected >= @viewport.y_offset + @viewport.height
+        @viewport.y_offset = @selected - @viewport.height + 1
+      end
+    end
+
+    private def key_in?(msg : Tea::KeyPressMsg, *keys : String) : Bool
+      key = msg.string
+      stroke = msg.keystroke
+      keys.any? { |k| k == key || k == stroke }
     end
   end
 end

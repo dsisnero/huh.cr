@@ -135,7 +135,9 @@ module Huh
       end
 
       private def run_interactive : Nil
-        raise "spinner interactive mode is not implemented yet"
+        program = Tea::Program.new(Huh::RuntimeModel(Huh::Spinner::Spinner).new(self))
+        _model, err = program.run
+        raise err if err
       end
 
       private def run_accessible : Nil

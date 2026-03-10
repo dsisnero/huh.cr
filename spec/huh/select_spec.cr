@@ -89,5 +89,28 @@ module Huh
       first.get_value.should eq("Mexico")
       form.selector.selected.selector.index.should eq(1)
     end
+
+    it "supports goto bottom and submit with enter" do
+      first = Huh.new_select(String)
+        .title("Choose")
+        .options(Huh.new_options("Red", "Green", "Blue"))
+      second = Huh.new_input.title("Next field")
+      form = Huh.new_form(Huh.new_group(first, second))
+      form.init
+
+      model, _ = form.update(Tea.key('G'))
+      form = model
+      model, cmd = form.update(Tea.key(::Tea::KeyEnter))
+      form = model
+      if cmd
+        if msg = cmd.call
+          model, _ = form.update(msg)
+          form = model
+        end
+      end
+
+      first.get_value.should eq("Blue")
+      form.selector.selected.selector.index.should eq(1)
+    end
   end
 end

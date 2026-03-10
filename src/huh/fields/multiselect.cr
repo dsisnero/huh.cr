@@ -282,12 +282,23 @@ module Huh
         # Update filtered options based on filter value
         update_filtered_options
 
-        # Check for escape to stop filtering
+        # Check for filtering control keys.
         case msg
         when Tea::KeyPressMsg
           case msg.string
-          when "esc"
+          when "enter"
+            if @filtered_options.empty?
+              clear_filter
+            end
             stop_filtering
+          when "esc"
+            if @filtered_options.empty?
+              clear_filter
+            end
+            stop_filtering
+          when "tab"
+            stop_filtering
+            return {self, submit}
           end
         end
         return {self, cmd}
@@ -295,19 +306,29 @@ module Huh
 
       case msg
       when Tea::KeyPressMsg
-        key = msg.string
-        case key
-        when "up", "k"
+        if key_in?(msg, "up", "k", "ctrl+k", "ctrl+p")
           move_cursor(-1)
-        when "down", "j"
+        elsif key_in?(msg, "down", "j", "ctrl+j", "ctrl+n")
           move_cursor(1)
-        when "x", "space", "enter"
+        elsif key_in?(msg, "home", "g")
+          goto_top
+        elsif key_in?(msg, "end", "G")
+          goto_bottom
+        elsif key_in?(msg, "ctrl+u")
+          half_page_up
+        elsif key_in?(msg, "ctrl+d")
+          half_page_down
+        elsif key_in?(msg, "x", "space", " ")
           toggle_selection
-        when "/"
+        elsif key_in?(msg, "shift+tab")
+          cmd = prev
+        elsif key_in?(msg, "enter", "tab")
+          cmd = submit
+        elsif key_in?(msg, "/")
           start_filtering if @filterable
-        when "esc"
+        elsif key_in?(msg, "esc")
           clear_filter
-        when "ctrl+a"
+        elsif key_in?(msg, "ctrl+a")
           toggle_select_all if @limit <= 0
         end
       end
@@ -360,6 +381,10 @@ module Huh
         KeyBinding.new(:toggle, ["x", "space"], "toggle"),
         KeyBinding.new(:up, ["up", "k", "ctrl+k", "ctrl+p"], "up"),
         KeyBinding.new(:down, ["down", "j", "ctrl+j", "ctrl+n"], "down"),
+        KeyBinding.new(:goto_top, ["g", "home"], "first"),
+        KeyBinding.new(:goto_bottom, ["G", "end"], "last"),
+        KeyBinding.new(:half_page_up, ["ctrl+u"], "half page up"),
+        KeyBinding.new(:half_page_down, ["ctrl+d"], "half page down"),
         KeyBinding.new(:submit, ["enter"], "submit"),
       ]
       binds << KeyBinding.new(:filter, ["/"], "filter") if @filterable
@@ -468,7 +493,7 @@ module Huh
       offset = 0
 
       @viewport.height = Math.max(MIN_HEIGHT, @height - offset)
-      @viewport.y_offset = @cursor
+      @viewport.y_offset = @viewport.y_offset.clamp(0, Math.max(0, @filtered_options.size - 1))
     end
 
     private def clear_filter
@@ -584,12 +609,40 @@ module Huh
     end
 
     private def move_cursor(delta : Int32)
+      return if @filtered_options.empty?
+
       new_index = @cursor + delta
       if new_index >= 0 && new_index < @filtered_options.size
         @cursor = new_index
         # Adjust viewport to keep cursor visible
         ensure_cursor_visible
       end
+    end
+
+    private def goto_top
+      return if @filtered_options.empty?
+      @cursor = 0
+      ensure_cursor_visible
+    end
+
+    private def goto_bottom
+      return if @filtered_options.empty?
+      @cursor = @filtered_options.size - 1
+      ensure_cursor_visible
+    end
+
+    private def half_page_up
+      return if @filtered_options.empty?
+      step = Math.max(1, @viewport.height // 2)
+      @cursor = Math.max(0, @cursor - step)
+      ensure_cursor_visible
+    end
+
+    private def half_page_down
+      return if @filtered_options.empty?
+      step = Math.max(1, @viewport.height // 2)
+      @cursor = Math.min(@filtered_options.size - 1, @cursor + step)
+      ensure_cursor_visible
     end
 
     private def toggle_selection
@@ -635,10 +688,37 @@ module Huh
       end
       # Ensure cursor index stays within bounds
       @cursor = @cursor.clamp(0, Math.max(0, @filtered_options.size - 1))
+      ensure_cursor_visible
     end
 
     private def ensure_cursor_visible
-      # TODO: adjust viewport y_offset to keep cursor option visible
+      return if @filtered_options.empty?
+
+      if @cursor < @viewport.y_offset
+        @viewport.y_offset = @cursor
+      elsif @cursor >= @viewport.y_offset + @viewport.height
+        @viewport.y_offset = @cursor - @viewport.height + 1
+      end
+    end
+
+    private def submit : Tea::Cmd?
+      update_value
+      @error = @validate.call(@accessor.get)
+      return nil if @error
+      Tea.batch([-> : ::Tea::Msg? { Huh.next_field }])
+    end
+
+    private def prev : Tea::Cmd?
+      update_value
+      @error = @validate.call(@accessor.get)
+      return nil if @error
+      Tea.batch([-> : ::Tea::Msg? { Huh.prev_field }])
+    end
+
+    private def key_in?(msg : Tea::KeyPressMsg, *keys : String) : Bool
+      key = msg.string
+      stroke = msg.keystroke
+      keys.any? { |k| k == key || k == stroke }
     end
 
     private def num_filtered_selected : Int32

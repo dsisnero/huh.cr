@@ -38,7 +38,9 @@ module Huh
       def view(form : Form) : String
         columns = [] of String
         form.selector.range do |_, group|
-          columns << group.content
+          unless group.hidden?
+            columns << group.content
+          end
           true
         end
         footer = form.selector.selected.footer
@@ -58,23 +60,18 @@ module Huh
       end
 
       private def visible_groups(form : Form) : Array(Group)
-        segment_index = form.selector.index // @columns
+        groups = Layout.rendered_groups(form)
+        return [] of Group if groups.empty?
+
+        selected_visible_index = Layout.rendered_index_for_selected(form, groups)
+        segment_index = selected_visible_index // @columns
         start_idx = segment_index * @columns
         end_idx = start_idx + @columns
 
-        total = form.selector.total
+        total = groups.size
         end_idx = total if end_idx > total
 
-        groups = [] of Group
-        form.selector.range do |i, group|
-          if i >= start_idx && i < end_idx
-            groups << group
-            true
-          else
-            true
-          end
-        end
-        groups
+        groups[start_idx...end_idx]
       end
 
       def view(form : Form) : String
@@ -103,24 +100,17 @@ module Huh
       end
 
       private def visible_groups(form : Form) : Array(Array(Group))
+        groups = Layout.rendered_groups(form)
+        return [] of Array(Group) if groups.empty?
+
         total = @rows * @columns
-        segment_index = form.selector.index // total
+        selected_visible_index = Layout.rendered_index_for_selected(form, groups)
+        segment_index = selected_visible_index // total
         start_idx = segment_index * total
         end_idx = start_idx + total
 
-        if glen = form.selector.total
-          end_idx = glen if end_idx > glen
-        end
-
-        visible = [] of Group
-        form.selector.range do |i, group|
-          if i >= start_idx && i < end_idx
-            visible << group
-            true
-          else
-            true
-          end
-        end
+        end_idx = groups.size if end_idx > groups.size
+        visible = groups[start_idx...end_idx]
 
         grid = Array(Array(Group)).new(@rows) { [] of Group }
         @rows.times do |i|
@@ -155,6 +145,21 @@ module Huh
       def group_width(form : Form, group : Group, width : Int32) : Int32
         width // @columns
       end
+    end
+
+    def self.rendered_groups(form : Form) : Array(Group)
+      groups = [] of Group
+      form.selector.range do |_, group|
+        groups << group unless group.hidden?
+        true
+      end
+      groups
+    end
+
+    def self.rendered_index_for_selected(form : Form, groups : Array(Group)) : Int32
+      selected = form.selector.selected
+      idx = groups.index(selected)
+      idx || 0
     end
   end
 end
