@@ -484,8 +484,8 @@ module Huh
     private def update_viewport_height
       # If no height is set size the viewport to the number of options.
       if @height <= 0
-        # TODO: calculate height from options view
-        @viewport.height = DEFAULT_HEIGHT
+        rendered_options = options_view
+        @viewport.height = Lipgloss.height(rendered_options)
         return
       end
 

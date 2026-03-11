@@ -467,7 +467,7 @@ module Huh
       input_styles.focused.text = focused_styles.text_input.text
       input_styles.focused.placeholder = focused_styles.text_input.placeholder
       input_styles.focused.prompt = focused_styles.text_input.prompt
-      input_styles.focused.suggestion = focused_styles.text_input.text # TODO: separate suggestion style?
+      input_styles.focused.suggestion = focused_styles.text_input.text
 
       # Map blurred styles
       input_styles.blurred.text = blurred_styles.text_input.text

@@ -36,14 +36,18 @@ module Huh
         .value(Cell(String).new("Banana"))
 
       sel.get_value.should eq("Banana")
-      # TODO: check internal selected index
+      sel.update(Tea.key(::Tea::KeyDown))
+      sel.get_value.should eq("Cherry")
     end
 
     it "filters options" do
       sel = Huh.new_select(String)
-        .options(Huh.new_options("Apple", "Apricot", "Banana"))
-        .filtering(true)
-      # TODO: implement filtering test after filtering logic is ready
+        .options(Huh.new_options("Apple", "Apricot", "Banana", "Blueberry"))
+      sel.filtering(true)
+      sel.update(Tea.key('B'))
+      sel.update(Tea.key(::Tea::KeyEnter))
+
+      sel.get_value.should eq("Banana")
     end
 
     it "updates directional keymap when toggling inline mode" do
