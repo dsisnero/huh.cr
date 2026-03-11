@@ -241,6 +241,47 @@ module Huh
       updated.should contain("Text AB")
     end
 
+    it "ports TestSelectDynamic (select title/description/options reevaluate)" do
+      trigger = Huh.cell("initial")
+
+      field1 = Huh.new_select(String)
+        .title_func(-> { "field1 title #{trigger.value}" })
+        .description_func(-> { "field1 desc #{trigger.value}" })
+        .options_func(-> { [Huh::Option.new("field1 opt #{trigger.value}", "field1 opt #{trigger.value}")] })
+        .height(5)
+      field2 = Huh.new_select(String)
+        .title_func(-> { "field2 title #{trigger.value}" })
+        .description_func(-> { "field2 desc #{trigger.value}" })
+        .options_func(-> { [Huh::Option.new("field2 opt #{trigger.value}", "field2 opt #{trigger.value}")] })
+        .height(5)
+
+      form = Huh.new_form(Huh.new_group(field1, field2))
+      form.init
+      form = Huh.apply(form, Huh::ParityNoopMsg.new)
+
+      initial = Ansi.strip(form.view)
+      initial.should contain("field1 title initial")
+      initial.should contain("field1 desc initial")
+      initial.should contain("field1 opt initial")
+      initial.should contain("field2 title initial")
+      initial.should contain("field2 desc initial")
+      initial.should contain("field2 opt initial")
+      field1.get_value.should eq("field1 opt initial")
+      field2.get_value.should eq("field2 opt initial")
+
+      trigger.value = "updated"
+      form = Huh.apply(form, Huh::ParityNoopMsg.new)
+      updated = Ansi.strip(form.view)
+      updated.should contain("field1 title updated")
+      updated.should contain("field1 desc updated")
+      updated.should contain("field1 opt updated")
+      updated.should contain("field2 title updated")
+      updated.should contain("field2 desc updated")
+      updated.should contain("field2 opt updated")
+      field1.get_value.should eq("field1 opt updated")
+      field2.get_value.should eq("field2 opt updated")
+    end
+
     it "ports TestForm (explicit group navigation)" do
       first = Huh.new_input.title("Group One")
       second = Huh.new_input.title("Group Two")
@@ -270,6 +311,21 @@ module Huh
       form = Huh.apply(form, Huh.keypress('H'))
       form = Huh.apply(form, Huh.keypress('i'))
       text.get_value.should eq("Hi")
+    end
+
+    it "ports TestTextExternalEditorHidden" do
+      text = Huh.new_text.external_editor(false)
+      form = Huh.new_form(Huh.new_group(text))
+      form.init
+
+      form = Huh.apply(form, Huh.keypress('H'))
+      form = Huh.apply(form, Huh.keypress('u'))
+      form = Huh.apply(form, Huh.keypress('h'))
+      view = Ansi.strip(form.view)
+
+      view.should contain("Huh")
+      view.should_not contain("open editor")
+      text.get_value.should eq("Huh")
     end
 
     it "ports TestSelectPageNavigation (selection boundaries and unsupported page keys)" do
@@ -407,6 +463,103 @@ module Huh
       form = Huh.apply(form, Huh::ParityNoopMsg.new)
       form.selector.index.should eq(0)
       Ansi.strip(form.view).should contain("Only Group")
+    end
+
+    it "ports TestNoTitleOrDescription" do
+      fields = [
+        Huh.new_input.as(Huh::FieldBase),
+        Huh.new_confirm.as(Huh::FieldBase),
+        Huh.new_note.as(Huh::FieldBase),
+        Huh.new_text.as(Huh::FieldBase),
+        Huh.new_select(String).options(Huh.new_options("One")).as(Huh::FieldBase),
+        Huh.new_multiselect(String).options(Huh.new_options("One")).as(Huh::FieldBase),
+      ]
+
+      fields.each do |field|
+        view = Ansi.strip(field.view)
+        view.lines.size.should be >= 1
+      end
+    end
+
+    it "ports TestTitleRowRender" do
+      title = "A title"
+      fields = [
+        Huh.new_input.title(title).as(Huh::FieldBase),
+        Huh.new_confirm.title(title).as(Huh::FieldBase),
+        Huh.new_note.title(title).as(Huh::FieldBase),
+        Huh.new_text.title(title).as(Huh::FieldBase),
+        Huh.new_select(String).title(title).options(Huh.new_options("One")).as(Huh::FieldBase),
+        Huh.new_multiselect(String).title(title).options(Huh.new_options("One")).as(Huh::FieldBase),
+      ]
+
+      fields.each do |field|
+        Ansi.strip(field.view).should contain(title)
+      end
+    end
+
+    it "ports TestDescriptionRowRender" do
+      description = "A description"
+      fields = [
+        Huh.new_input.description(description).as(Huh::FieldBase),
+        Huh.new_confirm.description(description).as(Huh::FieldBase),
+        Huh.new_note.description(description).as(Huh::FieldBase),
+        Huh.new_text.description(description).as(Huh::FieldBase),
+        Huh.new_select(String).description(description).options(Huh.new_options("One")).as(Huh::FieldBase),
+        Huh.new_multiselect(String).description(description).options(Huh.new_options("One")).as(Huh::FieldBase),
+      ]
+
+      fields.each do |field|
+        Ansi.strip(field.view).should contain(description)
+      end
+    end
+
+    it "ports TestGetFocusedField (focused field from selector)" do
+      first = Huh.new_input.title("First").with_key("First")
+      second = Huh.new_input.title("Second").with_key("Second")
+      third = Huh.new_input.title("Third").with_key("Third")
+      form = Huh.new_form(Huh.new_group(first, second, third)).with_width(25)
+      form.init
+
+      form = Huh.apply(form, Huh.next_field)
+      focused = form.selector.selected.selector.selected
+      focused.as(Huh::Input).key.should eq("Second")
+    end
+
+    it "ports TestAccessibleForm (group accessible flow)" do
+      input = Huh.new_input.title("Hello:")
+      group = Huh.new_group(input)
+      output_io = IO::Memory.new
+      input_io = IO::Memory.new("carlos\n")
+
+      group.run_accessible(output_io, input_io)
+      output_io.to_s.should contain("Input:")
+      input.get_value.should eq("carlos")
+    end
+
+    it "ports TestAccessibleFields (input variants)" do
+      output_io = IO::Memory.new
+      input = Huh.new_input
+      input.run_accessible(output_io, IO::Memory.new("Hello\n"))
+      output_io.to_s.should contain("Input:")
+      input.get_value.should eq("Hello")
+
+      with_default = Huh.new_input.value(Huh.cell("hi"))
+      with_default.run_accessible(IO::Memory.new, IO::Memory.new("\n"))
+      with_default.get_value.should eq("hi")
+    end
+
+    it "ports TestInputPasswordAccessible (not a tty path)" do
+      expect_raises(Exception, /tty/i) do
+        Huh.new_input
+          .echo_mode(Huh::Input::EchoMode::None)
+          .run_accessible(IO::Memory.new, IO::Memory.new)
+      end
+
+      expect_raises(Exception, /tty/i) do
+        Huh.new_input
+          .echo_mode(Huh::Input::EchoMode::Password)
+          .run_accessible(IO::Memory.new, IO::Memory.new)
+      end
     end
 
     it "ports TestAbort (no-op message does not abort navigation state)" do

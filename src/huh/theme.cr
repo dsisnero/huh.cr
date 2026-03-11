@@ -277,5 +277,23 @@ module Huh
     def self.default : Theme
       charm
     end
+
+    # Returns a theme inspired by Dracula.
+    # TODO: port dedicated palette from upstream Go.
+    def self.dracula : Theme
+      charm
+    end
+
+    # Returns a theme inspired by Base16.
+    # TODO: port dedicated palette from upstream Go.
+    def self.base16 : Theme
+      charm
+    end
+
+    # Returns a theme inspired by Catppuccin.
+    # TODO: port dedicated palette from upstream Go.
+    def self.catppuccin : Theme
+      charm
+    end
   end
 end

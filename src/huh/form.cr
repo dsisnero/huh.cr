@@ -3,6 +3,12 @@ require "./selector"
 require "./layout"
 
 module Huh
+  enum FormState
+    Normal
+    Completed
+    Aborted
+  end
+
   # Form represents a collection of groups that can be filled out by the user.
   #
   # Forms are composed of groups, which are composed of fields. Each group
@@ -34,7 +40,7 @@ module Huh
     @width : Int32
     @theme : Theme?
     @accessible : Bool = false
-    @state : Symbol = :normal
+    @state : FormState = FormState::Normal
     @layout : Layout::LayoutBase = Layout::LAYOUT_DEFAULT
     @timeout : Time::Span = 0.seconds
 
@@ -133,7 +139,7 @@ module Huh
       case msg
       when NextGroupMsg
         if (next_visible = find_next_visible_group(@selector.index + 1)) < 0
-          @state = :completed
+          @state = FormState::Completed
           return {self, Tea.quit}
         end
         @selector.set_index(next_visible)
@@ -165,7 +171,7 @@ module Huh
               @selector.selected.active = true
               return {self, @selector.selected.init}
             else
-              @state = :completed
+              @state = FormState::Completed
               return {self, Tea.quit}
             end
           end

@@ -413,17 +413,26 @@ module Huh
       styles = active_styles
       writer << styles.title.render(@title_eval.value) << "\n\n"
 
-      # Use accessibility module for prompting
-      input = Accessibility.prompt_string(writer, reader, "Input: ", ->(s : String) do
+      validator = ->(s : String) do
         err = @validate.call(s)
         err ? err.message : nil
     rescue e : Exception
       e.message
-      end)
+      end
+
+      # Match Go parity: password/no-echo prompt requires a TTY.
+      input = case @textinput.echo_mode
+              when EchoMode::Password, EchoMode::None
+                Accessibility.prompt_password(writer, reader, "Password: ", validator)
+              else
+                Accessibility.prompt_string(writer, reader, "Input: ", validator)
+              end
+      input = @accessor.get if input.empty?
 
       @accessor.set(input)
       @value = @accessor.get
-      writer << styles.selected_option.render("Input: " + @value)
+      label = @textinput.echo_mode.in?(EchoMode::Password, EchoMode::None) ? "Password: " : "Input: "
+      writer << styles.selected_option.render(label + @value)
       writer << "\n"
     end
 

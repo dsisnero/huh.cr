@@ -82,6 +82,7 @@ require "./huh/field"
 require "./huh/accessor"
 require "./huh/selector"
 require "./huh/eval"
+require "./huh/validation"
 require "./huh/runtime_model"
 require "./huh/form"
 require "./huh/fields/input"
@@ -140,6 +141,27 @@ module Huh
   # LayoutGrid creates a grid layout with the given number of rows and columns.
   def self.layout_grid(rows : Int32, columns : Int32) : Layout::LayoutBase
     Layout.layout_grid(rows, columns)
+  end
+
+  # Theme helpers matching Go parity using Crystal naming idioms.
+  def self.theme_base : Theme
+    Theme.base
+  end
+
+  def self.theme_charm : Theme
+    Theme.charm
+  end
+
+  def self.theme_dracula : Theme
+    Theme.dracula
+  end
+
+  def self.theme_base16 : Theme
+    Theme.base16
+  end
+
+  def self.theme_catppuccin : Theme
+    Theme.catppuccin
   end
 
   # Cell creates a mutable reference to a value, used for field value binding.

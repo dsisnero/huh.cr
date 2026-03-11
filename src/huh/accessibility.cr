@@ -1,5 +1,11 @@
 module Huh
   module Accessibility
+    private def self.tty_reader?(reader : IO) : Bool
+      fd_reader = reader.as?(IO::FileDescriptor)
+      return false unless fd_reader
+      LibC.isatty(fd_reader.fd) == 1
+    end
+
     # PromptInt prompts a user for an integer between a certain range.
     #
     # Given invalid input (non-integers, integers outside of the range), the user
@@ -68,6 +74,28 @@ module Huh
     # PromptString prompts a user for a string value without validation.
     def self.prompt_string(writer : IO, reader : IO, prompt : String) : String
       prompt_string(writer, reader, prompt, ->(_s : String) { nil })
+    end
+
+    # PromptPassword prompts a password value in accessible mode.
+    # This requires a TTY reader to preserve parity with Go behavior.
+    def self.prompt_password(writer : IO, reader : IO, prompt : String, validator : Proc(String, String?)) : String
+      raise "password prompt requires a tty reader" unless tty_reader?(reader)
+
+      loop do
+        writer << prompt
+        writer.flush
+
+        input = reader.gets
+        raise "EOF" unless input
+
+        trimmed = input.strip
+        error = validator.call(trimmed)
+        unless error
+          return trimmed
+        end
+
+        writer << error << "\n"
+      end
     end
 
     # ParseBool parses a string into a boolean value.
