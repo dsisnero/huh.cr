@@ -50,7 +50,9 @@ require "./huh/keymap"
 # See the examples directory for complete working examples.
 #
 module Huh
-  VERSION = "0.1.1"
+  def self.version : String
+    "0.1.1"
+  end
 
   # Error raised when a form run is interrupted by the user.
   class UserAbortedError < Exception
