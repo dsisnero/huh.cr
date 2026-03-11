@@ -279,21 +279,150 @@ module Huh
     end
 
     # Returns a theme inspired by Dracula.
-    # TODO: port dedicated palette from upstream Go.
     def self.dracula : Theme
-      charm
+      theme = base
+
+      background = Lipgloss::Color.from_hex("#282a36")
+      selection = Lipgloss::Color.from_hex("#44475a")
+      foreground = Lipgloss::Color.from_hex("#f8f8f2")
+      comment = Lipgloss::Color.from_hex("#6272a4")
+      green = Lipgloss::Color.from_hex("#50fa7b")
+      purple = Lipgloss::Color.from_hex("#bd93f9")
+      red = Lipgloss::Color.from_hex("#ff5555")
+      yellow = Lipgloss::Color.from_hex("#f1fa8c")
+
+      theme.focused.base = theme.focused.base.border_foreground(selection)
+      theme.focused.card = theme.focused.base
+      theme.focused.title = theme.focused.title.foreground(purple)
+      theme.focused.note_title = theme.focused.note_title.foreground(purple)
+      theme.focused.description = theme.focused.description.foreground(comment)
+      theme.focused.error_indicator = theme.focused.error_indicator.foreground(red)
+      theme.focused.directory = theme.focused.directory.foreground(purple)
+      theme.focused.file = theme.focused.file.foreground(foreground)
+      theme.focused.error_message = theme.focused.error_message.foreground(red)
+      theme.focused.select_selector = theme.focused.select_selector.foreground(yellow)
+      theme.focused.next_indicator = theme.focused.next_indicator.foreground(yellow)
+      theme.focused.prev_indicator = theme.focused.prev_indicator.foreground(yellow)
+      theme.focused.option = theme.focused.option.foreground(foreground)
+      theme.focused.multiselect_selector = theme.focused.multiselect_selector.foreground(yellow)
+      theme.focused.selected_option = theme.focused.selected_option.foreground(green)
+      theme.focused.selected_prefix = theme.focused.selected_prefix.foreground(green)
+      theme.focused.unselected_option = theme.focused.unselected_option.foreground(foreground)
+      theme.focused.unselected_prefix = theme.focused.unselected_prefix.foreground(comment)
+      theme.focused.focused_button = theme.focused.focused_button.foreground(yellow).background(purple).bold(true)
+      theme.focused.blurred_button = theme.focused.blurred_button.foreground(foreground).background(background)
+      theme.focused.text_input.cursor = theme.focused.text_input.cursor.foreground(yellow)
+      theme.focused.text_input.placeholder = theme.focused.text_input.placeholder.foreground(comment)
+      theme.focused.text_input.prompt = theme.focused.text_input.prompt.foreground(yellow)
+
+      theme.blurred.copy_from(theme.focused)
+      theme.blurred.base = theme.blurred.base.border_style(Lipgloss::Border.hidden)
+      theme.blurred.card = theme.blurred.base
+      theme.blurred.next_indicator = Lipgloss::Style.new
+      theme.blurred.prev_indicator = Lipgloss::Style.new
+
+      theme.group.title = theme.focused.title
+      theme.group.description = theme.focused.description
+      theme
     end
 
     # Returns a theme inspired by Base16.
-    # TODO: port dedicated palette from upstream Go.
     def self.base16 : Theme
-      charm
+      theme = base
+
+      theme.focused.base = theme.focused.base.border_foreground(Lipgloss::Color.indexed(8))
+      theme.focused.card = theme.focused.base
+      theme.focused.title = theme.focused.title.foreground(Lipgloss::Color.indexed(6))
+      theme.focused.note_title = theme.focused.note_title.foreground(Lipgloss::Color.indexed(6))
+      theme.focused.directory = theme.focused.directory.foreground(Lipgloss::Color.indexed(6))
+      theme.focused.description = theme.focused.description.foreground(Lipgloss::Color.indexed(8))
+      theme.focused.error_indicator = theme.focused.error_indicator.foreground(Lipgloss::Color.indexed(9))
+      theme.focused.error_message = theme.focused.error_message.foreground(Lipgloss::Color.indexed(9))
+      theme.focused.select_selector = theme.focused.select_selector.foreground(Lipgloss::Color.indexed(3))
+      theme.focused.next_indicator = theme.focused.next_indicator.foreground(Lipgloss::Color.indexed(3))
+      theme.focused.prev_indicator = theme.focused.prev_indicator.foreground(Lipgloss::Color.indexed(3))
+      theme.focused.option = theme.focused.option.foreground(Lipgloss::Color.indexed(7))
+      theme.focused.multiselect_selector = theme.focused.multiselect_selector.foreground(Lipgloss::Color.indexed(3))
+      theme.focused.selected_option = theme.focused.selected_option.foreground(Lipgloss::Color.indexed(2))
+      theme.focused.selected_prefix = theme.focused.selected_prefix.foreground(Lipgloss::Color.indexed(2))
+      theme.focused.unselected_option = theme.focused.unselected_option.foreground(Lipgloss::Color.indexed(7))
+      theme.focused.focused_button = theme.focused.focused_button.foreground(Lipgloss::Color.indexed(7)).background(Lipgloss::Color.indexed(5))
+      theme.focused.blurred_button = theme.focused.blurred_button.foreground(Lipgloss::Color.indexed(7)).background(Lipgloss::Color.indexed(0))
+
+      # Match upstream behavior exactly: these calls are intentionally no-op assignments.
+      theme.focused.text_input.cursor.foreground(Lipgloss::Color.indexed(5))
+      theme.focused.text_input.placeholder.foreground(Lipgloss::Color.indexed(8))
+      theme.focused.text_input.prompt.foreground(Lipgloss::Color.indexed(3))
+
+      theme.blurred.copy_from(theme.focused)
+      theme.blurred.base = theme.blurred.base.border_style(Lipgloss::Border.hidden)
+      theme.blurred.card = theme.blurred.base
+      theme.blurred.note_title = theme.blurred.note_title.foreground(Lipgloss::Color.indexed(8))
+      theme.blurred.title = theme.blurred.note_title.foreground(Lipgloss::Color.indexed(8))
+      theme.blurred.text_input.prompt = theme.blurred.text_input.prompt.foreground(Lipgloss::Color.indexed(8))
+      theme.blurred.text_input.text = theme.blurred.text_input.text.foreground(Lipgloss::Color.indexed(7))
+      theme.blurred.next_indicator = Lipgloss::Style.new
+      theme.blurred.prev_indicator = Lipgloss::Style.new
+
+      theme.group.title = theme.focused.title
+      theme.group.description = theme.focused.description
+      theme
     end
 
     # Returns a theme inspired by Catppuccin.
-    # TODO: port dedicated palette from upstream Go.
     def self.catppuccin : Theme
-      charm
+      theme = base
+
+      base_color = adaptive("#eff1f5", "#1e1e2e")
+      text = adaptive("#4c4f69", "#cdd6f4")
+      subtext1 = adaptive("#5c5f77", "#bac2de")
+      subtext0 = adaptive("#6c6f85", "#a6adc8")
+      overlay0 = adaptive("#9ca0b0", "#6c7086")
+      green = adaptive("#40a02b", "#a6e3a1")
+      red = adaptive("#d20f39", "#f38ba8")
+      pink = adaptive("#ea76cb", "#f5c2e7")
+      mauve = adaptive("#8839ef", "#cba6f7")
+      cursor = adaptive("#dc8a78", "#f5e0dc")
+
+      theme.focused.base = theme.focused.base.border_foreground(subtext1)
+      theme.focused.card = theme.focused.base
+      theme.focused.title = theme.focused.title.foreground(mauve)
+      theme.focused.note_title = theme.focused.note_title.foreground(mauve)
+      theme.focused.directory = theme.focused.directory.foreground(mauve)
+      theme.focused.description = theme.focused.description.foreground(subtext0)
+      theme.focused.error_indicator = theme.focused.error_indicator.foreground(red)
+      theme.focused.error_message = theme.focused.error_message.foreground(red)
+      theme.focused.select_selector = theme.focused.select_selector.foreground(pink)
+      theme.focused.next_indicator = theme.focused.next_indicator.foreground(pink)
+      theme.focused.prev_indicator = theme.focused.prev_indicator.foreground(pink)
+      theme.focused.option = theme.focused.option.foreground(text)
+      theme.focused.multiselect_selector = theme.focused.multiselect_selector.foreground(pink)
+      theme.focused.selected_option = theme.focused.selected_option.foreground(green)
+      theme.focused.selected_prefix = theme.focused.selected_prefix.foreground(green)
+      theme.focused.unselected_prefix = theme.focused.unselected_prefix.foreground(text)
+      theme.focused.unselected_option = theme.focused.unselected_option.foreground(text)
+      theme.focused.focused_button = theme.focused.focused_button.foreground(base_color).background(pink)
+      theme.focused.blurred_button = theme.focused.blurred_button.foreground(text).background(base_color)
+      theme.focused.text_input.cursor = theme.focused.text_input.cursor.foreground(cursor)
+      theme.focused.text_input.placeholder = theme.focused.text_input.placeholder.foreground(overlay0)
+      theme.focused.text_input.prompt = theme.focused.text_input.prompt.foreground(pink)
+
+      theme.blurred.copy_from(theme.focused)
+      theme.blurred.base = theme.blurred.base.border_style(Lipgloss::Border.hidden)
+      theme.blurred.card = theme.blurred.base
+      theme.blurred.next_indicator = Lipgloss::Style.new
+      theme.blurred.prev_indicator = Lipgloss::Style.new
+
+      theme.group.title = theme.focused.title
+      theme.group.description = theme.focused.description
+      theme
+    end
+
+    private def self.adaptive(light_hex : String, dark_hex : String) : Lipgloss::AdaptiveColor
+      Lipgloss::AdaptiveColor.new(
+        Lipgloss::Color.from_hex(light_hex),
+        Lipgloss::Color.from_hex(dark_hex)
+      )
     end
   end
 end
