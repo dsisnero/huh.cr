@@ -41,5 +41,12 @@ module Huh
 
       input.should be_a(Input)
     end
+
+    it "enables suggestion help keybind when suggestions are present" do
+      input = Huh.new_input.suggestions(["alpha", "beta"])
+      binds = input.key_binds
+
+      binds.any? { |bind| bind.action == :accept_suggestion }.should be_true
+    end
   end
 end

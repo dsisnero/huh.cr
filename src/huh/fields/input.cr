@@ -146,7 +146,9 @@ module Huh
     # Suggestions sets the suggestions to display for autocomplete
     def suggestions(suggestions : Array(String)) : self
       @suggestions_eval.value = suggestions
-      # TODO: Configure suggestions on textinput
+      @textinput.show_suggestions = suggestions.size > 0
+      @textinput.key_map.accept_suggestion.set_enabled(suggestions.size > 0)
+      @textinput.set_suggestions(suggestions)
       self
     end
 
@@ -266,7 +268,10 @@ module Huh
           @textinput.placeholder = @placeholder_eval.value
         end
         if @suggestions_eval.update
-          @textinput.set_suggestions(@suggestions_eval.value)
+          suggestions = @suggestions_eval.value
+          @textinput.show_suggestions = suggestions.size > 0
+          @textinput.key_map.accept_suggestion.set_enabled(suggestions.size > 0)
+          @textinput.set_suggestions(suggestions)
         end
         return {self, nil}
       end
@@ -345,9 +350,9 @@ module Huh
         end
       end
 
-      # Error message (TODO: style with error_message style)
+      # Error message
       if error = @error
-        sb << "Error: " << (error.message || "Error") << "\n"
+        sb << styles.error_message.render("Error: " + (error.message || "Error")) << "\n"
       end
 
       # Text input view
@@ -387,13 +392,14 @@ module Huh
       binds = [] of KeyBinding
 
       # Convert Bubbles::Key::Binding to Huh::KeyBinding
-      # Go Huh Input.KeyBinds() returns Prev, Submit, Next (and AcceptSuggestion if suggestions shown)
-      # We don't have suggestions implemented yet, so just return Prev, Submit, Next
-      # The form's help rendering will filter out disabled bindings
-
       if keymap.prev.enabled?
         help = keymap.prev.help
         binds << KeyBinding.new(:prev, keymap.prev.keys || [] of String, help.desc)
+      end
+
+      if @textinput.show_suggestions? && keymap.accept_suggestion.enabled?
+        help = keymap.accept_suggestion.help
+        binds << KeyBinding.new(:accept_suggestion, keymap.accept_suggestion.keys || [] of String, help.desc)
       end
 
       if keymap.next.enabled?
@@ -476,7 +482,6 @@ module Huh
       input_styles.cursor.color = cursor_color || Lipgloss.color("7")
       # Shape defaults to Block
       input_styles.cursor.shape = Tea::CursorStyle::Block
-      # TODO: map cursor_text style to cursor text styling?
 
       @textinput.styles = input_styles
     end

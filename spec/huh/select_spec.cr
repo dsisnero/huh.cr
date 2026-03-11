@@ -46,6 +46,31 @@ module Huh
       # TODO: implement filtering test after filtering logic is ready
     end
 
+    it "updates directional keymap when toggling inline mode" do
+      keymap = Huh::KeyMap.new
+      sel = Huh.new_select(String).keymap(keymap).inline(true)
+
+      select_map = sel.keymap.not_nil!
+      select_map.left.enabled?.should be_true
+      select_map.right.enabled?.should be_true
+      select_map.up.enabled?.should be_false
+      select_map.down.enabled?.should be_false
+    end
+
+    it "updates filter keymap states while filtering" do
+      keymap = Huh::KeyMap.new
+      sel = Huh.new_select(String).keymap(keymap)
+      select_map = sel.keymap.not_nil!
+
+      sel.filtering(true)
+      select_map.set_filter.enabled?.should be_true
+      select_map.filter.enabled?.should be_false
+
+      sel.filtering(false)
+      select_map.set_filter.enabled?.should be_false
+      select_map.filter.enabled?.should be_true
+    end
+
     it "matches golden file for basic select" do
       # Create select field with same options as golden file
       select_field = Huh.new_select(String)

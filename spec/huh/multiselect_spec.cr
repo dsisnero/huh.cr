@@ -39,6 +39,19 @@ module Huh
       sel.filterable?.should be_false
     end
 
+    it "updates filter keymap states while filtering" do
+      keymap = Huh::KeyMap.new
+      sel = Huh.new_multiselect(String).keymap(keymap)
+      select_map = sel.keymap.not_nil!
+
+      sel.filtering(true)
+      select_map.set_filter.enabled?.should be_true
+      select_map.filter.enabled?.should be_false
+      select_map.next.enabled?.should be_false
+      select_map.submit.enabled?.should be_false
+      select_map.prev.enabled?.should be_false
+    end
+
     it "submits selection and advances with enter" do
       first = Huh.new_multiselect(String)
         .options(Huh.new_options("A", "B", "C", "D"))

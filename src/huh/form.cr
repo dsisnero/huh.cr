@@ -194,6 +194,26 @@ module Huh
 
     def with_theme(theme : Theme) : self
       @theme = theme
+      @selector.range do |_, group|
+        group.with_theme(theme)
+        true
+      end
+      self
+    end
+
+    def with_show_help(show : Bool) : self
+      @selector.range do |_, group|
+        group.with_show_help(show)
+        true
+      end
+      self
+    end
+
+    def with_show_errors(show : Bool) : self
+      @selector.range do |_, group|
+        group.with_show_errors(show)
+        true
+      end
       self
     end
 
@@ -350,6 +370,8 @@ module Huh
     @theme : Theme?
     @active : Bool = false
     @help : Bubbles::Help::Model
+    @show_help : Bool
+    @show_errors : Bool
     @hide : Proc(Bool)?
     property? active : Bool
 
@@ -358,6 +380,8 @@ module Huh
       @width = 80
       @theme = nil
       @help = Bubbles::Help::Model.new
+      @show_help = true
+      @show_errors = true
       @hide = nil
       # Propagate default width to all fields
       @selector.items.each do |field|
@@ -475,47 +499,22 @@ module Huh
 
     # Footer returns the footer text for the group.
     def footer : String
-      # Start with newline like Go's Footer() method
-      String.build do |str|
-        str << '\n'
+      parts = [] of String
+      errors = errors()
 
-        # Get help text from field's key bindings
-        field = @selector.selected.as(Huh::FieldBase)
-        huh_bindings = field.key_binds
-        # Convert Huh KeyBinding to Bubbles Key::Binding
-        bubbles_bindings = huh_bindings.map do |binding|
-          # Map key names to display symbols (matching Go behavior)
-          display_key = case binding.action
-                        when :up
-                          "↑"
-                        when :down
-                          "↓"
-                        when :toggle
-                          "←/→"
-                        when :filter
-                          "/"
-                        when :submit
-                          "enter"
-                        when :accept
-                          "y"
-                        when :reject
-                          "n"
-                        else
-                          binding.keys.first? || ""
-                        end
-
-          Bubbles::Key::Binding.new(
-            keys: binding.keys,
-            help: Bubbles::Key::Help.new(
-              key: display_key,
-              desc: binding.help
-            )
-          )
-        end
-        str << @help.short_help_view(bubbles_bindings)
-
-        # TODO: Add error display like Go's Footer() when showErrors is true
+      if @show_help && errors.empty?
+        parts << @help.short_help_view(help_bindings(@selector.selected.as(Huh::FieldBase)))
       end
+
+      if @show_errors
+        styles = (@theme || Theme.default).focused
+        errors.each do |err|
+          parts << Huh.wrap(styles.error_message.render(err.message || "error"), @width)
+        end
+      end
+
+      return "" if parts.empty?
+      "\n" + parts.join("\n")
     end
 
     # Getter for selector
@@ -536,6 +535,21 @@ module Huh
 
     def with_theme(theme : Theme) : self
       @theme = theme
+      @help.styles = theme.help
+      @selector.range do |_, field|
+        field.with_theme(theme)
+        true
+      end
+      self
+    end
+
+    def with_show_help(show : Bool) : self
+      @show_help = show
+      self
+    end
+
+    def with_show_errors(show : Bool) : self
+      @show_errors = show
       self
     end
 
@@ -568,6 +582,51 @@ module Huh
     # Get fields
     def fields : Array(FieldBase)
       @selector.items
+    end
+
+    # Errors returns the errors for fields in this group.
+    def errors : Array(Exception)
+      errs = [] of Exception
+      @selector.range do |_, field|
+        if err = field.error
+          errs << err
+        end
+        true
+      end
+      errs
+    end
+
+    private def help_bindings(field : Huh::FieldBase) : Array(Bubbles::Key::Binding)
+      field.key_binds.map do |binding|
+        Bubbles::Key::Binding.new(
+          keys: binding.keys,
+          help: Bubbles::Key::Help.new(
+            key: display_key_for(binding),
+            desc: binding.help
+          )
+        )
+      end
+    end
+
+    private def display_key_for(binding : KeyBinding) : String
+      case binding.action
+      when :up
+        "↑"
+      when :down
+        "↓"
+      when :toggle
+        "←/→"
+      when :filter
+        "/"
+      when :submit
+        "enter"
+      when :accept
+        "y"
+      when :reject
+        "n"
+      else
+        binding.keys.first? || ""
+      end
     end
   end
 end

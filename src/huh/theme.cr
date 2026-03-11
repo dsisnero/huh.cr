@@ -1,4 +1,5 @@
 require "lipgloss"
+require "bubbles"
 
 module Huh
   # TextInputStyles are the styles for text inputs.
@@ -158,6 +159,7 @@ module Huh
     property field_separator : Lipgloss::Style
     property blurred : FieldStyles
     property focused : FieldStyles
+    property help : Bubbles::Help::Styles
 
     def initialize
       @form = FormStyles.new
@@ -165,6 +167,7 @@ module Huh
       @field_separator = Lipgloss::Style.new
       @blurred = FieldStyles.new
       @focused = FieldStyles.new
+      @help = Bubbles::Help.new.styles
     end
 
     # Create a new base theme with general styles to be inherited by other themes.
@@ -377,6 +380,7 @@ module Huh
       text = adaptive("#4c4f69", "#cdd6f4")
       subtext1 = adaptive("#5c5f77", "#bac2de")
       subtext0 = adaptive("#6c6f85", "#a6adc8")
+      overlay1 = adaptive("#8c8fa1", "#7f849c")
       overlay0 = adaptive("#9ca0b0", "#6c7086")
       green = adaptive("#40a02b", "#a6e3a1")
       red = adaptive("#d20f39", "#f38ba8")
@@ -412,6 +416,14 @@ module Huh
       theme.blurred.card = theme.blurred.base
       theme.blurred.next_indicator = Lipgloss::Style.new
       theme.blurred.prev_indicator = Lipgloss::Style.new
+
+      theme.help.ellipsis = theme.help.ellipsis.foreground(subtext0)
+      theme.help.short_key = theme.help.short_key.foreground(subtext0)
+      theme.help.short_desc = theme.help.short_desc.foreground(overlay1)
+      theme.help.short_separator = theme.help.short_separator.foreground(subtext0)
+      theme.help.full_key = theme.help.full_key.foreground(subtext0)
+      theme.help.full_desc = theme.help.full_desc.foreground(overlay1)
+      theme.help.full_separator = theme.help.full_separator.foreground(subtext0)
 
       theme.group.title = theme.focused.title
       theme.group.description = theme.focused.description

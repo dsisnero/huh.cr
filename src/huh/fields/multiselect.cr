@@ -171,7 +171,7 @@ module Huh
 
     # Filtering sets the filtering state of the multi-select field.
     def filtering(filtering : Bool) : self
-      @filtering = filtering
+      set_filtering(filtering)
       @filter.focus if filtering
       self
     end
@@ -489,8 +489,11 @@ module Huh
         return
       end
 
-      # TODO: offset for title and description lines
       offset = 0
+      title = title_view
+      offset += Lipgloss.height(title) unless title.empty?
+      description = description_view
+      offset += Lipgloss.height(description) unless description.empty?
 
       @viewport.height = Math.max(MIN_HEIGHT, @height - offset)
       @viewport.y_offset = @viewport.y_offset.clamp(0, Math.max(0, @filtered_options.size - 1))
@@ -504,7 +507,13 @@ module Huh
 
     private def set_filtering(filtering : Bool)
       @filtering = filtering
-      # TODO: update keymap enabled states
+      keymap = @keymap || Huh::DEFAULT_KEYMAP.multiselect
+      keymap.set_filter.set_enabled(filtering)
+      keymap.filter.set_enabled(!filtering)
+      keymap.clear_filter.set_enabled(!filtering && !@filter.value.empty?)
+      keymap.next.set_enabled(!filtering)
+      keymap.submit.set_enabled(!filtering)
+      keymap.prev.set_enabled(!filtering)
     end
 
     private def title_view : String
@@ -668,12 +677,12 @@ module Huh
     end
 
     private def start_filtering
-      @filtering = true
+      set_filtering(true)
       @filter.focus
     end
 
     private def stop_filtering
-      @filtering = false
+      set_filtering(false)
       @filter.blur
     end
 

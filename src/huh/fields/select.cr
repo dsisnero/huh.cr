@@ -202,7 +202,7 @@ module Huh
 
     # Filtering sets the filtering state of the select field.
     def filtering(filtering : Bool) : self
-      @filtering = filtering
+      set_filtering(filtering)
       @filter.focus if filtering
       self
     end
@@ -213,7 +213,7 @@ module Huh
       if inline
         height(1)
       end
-      # TODO: enable/disable keymap left/right, up/down
+      update_inline_keymap
       self
     end
 
@@ -265,6 +265,7 @@ module Huh
     # Keymap configuration
     def keymap(keymap : KeyMap) : self
       @keymap = keymap.select
+      update_inline_keymap
       self
     end
 
@@ -480,8 +481,11 @@ module Huh
         return
       end
 
-      # TODO: offset for title and description lines
       offset = 0
+      title = title_view
+      offset += Lipgloss.height(title) unless title.empty?
+      description = description_view
+      offset += Lipgloss.height(description) unless description.empty?
 
       @viewport.height = Math.max(MIN_HEIGHT, @height - offset)
       @viewport.y_offset = @viewport.y_offset.clamp(0, Math.max(0, @filtered_options.size - 1))
@@ -494,8 +498,19 @@ module Huh
     end
 
     private def set_filtering(filtering : Bool)
+      if @inline && filtering
+        @filter.width = Math.max(0, Lipgloss.width(title_view) - 2)
+      end
       @filtering = filtering
-      # TODO: update keymap enabled states
+      keymap = @keymap || Huh::DEFAULT_KEYMAP.select
+      keymap.set_filter.set_enabled(filtering)
+      keymap.filter.set_enabled(!filtering)
+      keymap.clear_filter.set_enabled(!filtering && !@filter.value.empty?)
+      if position = @position
+        keymap.prev.set_enabled(!filtering && !position.first_field)
+        keymap.next.set_enabled(!filtering && !position.last_field)
+        keymap.submit.set_enabled(!filtering && position.last_field)
+      end
     end
 
     private def title_view : String
@@ -676,13 +691,21 @@ module Huh
     end
 
     private def start_filtering
-      @filtering = true
+      set_filtering(true)
       @filter.focus
     end
 
     private def stop_filtering
-      @filtering = false
+      set_filtering(false)
       @filter.blur
+    end
+
+    private def update_inline_keymap
+      keymap = @keymap || Huh::DEFAULT_KEYMAP.select
+      keymap.left.set_enabled(@inline)
+      keymap.right.set_enabled(@inline)
+      keymap.up.set_enabled(!@inline)
+      keymap.down.set_enabled(!@inline)
     end
 
     private def submit_selection : Tea::Cmd?
