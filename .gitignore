@@ -4,10 +4,18 @@
 !/bin/check_go_port_inventory.sh
 !/bin/check_go_source_parity.sh
 !/bin/check_go_test_parity.sh
+!/bin/check_port_inventory.sh
+!/bin/check_source_parity.sh
+!/bin/check_test_parity.sh
+!/bin/ensure_parity_plan.sh
 !/bin/generate_bd_issue_commands.sh
 !/bin/generate_go_port_inventory.sh
 !/bin/generate_go_source_parity_manifest.sh
 !/bin/generate_go_test_parity_manifest.sh
+!/bin/generate_port_inventory.sh
+!/bin/generate_source_parity_manifest.sh
+!/bin/generate_test_parity_manifest.sh
+!/bin/verify_parity_adversarial.sh
 /.shards/
 *.dwarf
 

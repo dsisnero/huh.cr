@@ -1,0 +1,40 @@
+id	path	test_name	status	notes
+vendor/huh/huh_test.go:TestAbort	vendor/huh/huh_test.go	TestAbort	ported	matching token found in Crystal specs
+vendor/huh/huh_test.go:TestAccessibleFields	vendor/huh/huh_test.go	TestAccessibleFields	missing	no matching Crystal spec token
+vendor/huh/huh_test.go:TestAccessibleForm	vendor/huh/huh_test.go	TestAccessibleForm	missing	no matching Crystal spec token
+vendor/huh/huh_test.go:TestConfirm	vendor/huh/huh_test.go	TestConfirm	ported	matching token found in Crystal specs
+vendor/huh/huh_test.go:TestDescriptionRowRender	vendor/huh/huh_test.go	TestDescriptionRowRender	missing	no matching Crystal spec token
+vendor/huh/huh_test.go:TestDynamicHelp	vendor/huh/huh_test.go	TestDynamicHelp	ported	matching token found in Crystal specs
+vendor/huh/huh_test.go:TestFile	vendor/huh/huh_test.go	TestFile	ported	matching token found in Crystal specs
+vendor/huh/huh_test.go:TestForm	vendor/huh/huh_test.go	TestForm	ported	matching token found in Crystal specs
+vendor/huh/huh_test.go:TestGetFocusedField	vendor/huh/huh_test.go	TestGetFocusedField	missing	no matching Crystal spec token
+vendor/huh/huh_test.go:TestHideGroup	vendor/huh/huh_test.go	TestHideGroup	ported	matching token found in Crystal specs
+vendor/huh/huh_test.go:TestHideGroupLastAndFirstGroupsNotHidden	vendor/huh/huh_test.go	TestHideGroupLastAndFirstGroupsNotHidden	ported	matching token found in Crystal specs
+vendor/huh/huh_test.go:TestInlineInput	vendor/huh/huh_test.go	TestInlineInput	ported	matching token found in Crystal specs
+vendor/huh/huh_test.go:TestInput	vendor/huh/huh_test.go	TestInput	ported	matching token found in Crystal specs
+vendor/huh/huh_test.go:TestInputPasswordAccessible	vendor/huh/huh_test.go	TestInputPasswordAccessible	missing	no matching Crystal spec token
+vendor/huh/huh_test.go:TestMultiSelect	vendor/huh/huh_test.go	TestMultiSelect	ported	matching token found in Crystal specs
+vendor/huh/huh_test.go:TestMultiSelectFiltering	vendor/huh/huh_test.go	TestMultiSelectFiltering	ported	matching token found in Crystal specs
+vendor/huh/huh_test.go:TestNoTitleOrDescription	vendor/huh/huh_test.go	TestNoTitleOrDescription	missing	no matching Crystal spec token
+vendor/huh/huh_test.go:TestNote	vendor/huh/huh_test.go	TestNote	ported	matching token found in Crystal specs
+vendor/huh/huh_test.go:TestPrevGroup	vendor/huh/huh_test.go	TestPrevGroup	ported	matching token found in Crystal specs
+vendor/huh/huh_test.go:TestSelect	vendor/huh/huh_test.go	TestSelect	ported	matching token found in Crystal specs
+vendor/huh/huh_test.go:TestSelectDynamic	vendor/huh/huh_test.go	TestSelectDynamic	missing	no matching Crystal spec token
+vendor/huh/huh_test.go:TestSelectPageNavigation	vendor/huh/huh_test.go	TestSelectPageNavigation	ported	matching token found in Crystal specs
+vendor/huh/huh_test.go:TestSkip	vendor/huh/huh_test.go	TestSkip	ported	matching token found in Crystal specs
+vendor/huh/huh_test.go:TestText	vendor/huh/huh_test.go	TestText	ported	matching token found in Crystal specs
+vendor/huh/huh_test.go:TestTextExternalEditorHidden	vendor/huh/huh_test.go	TestTextExternalEditorHidden	missing	no matching Crystal spec token
+vendor/huh/huh_test.go:TestTimeout	vendor/huh/huh_test.go	TestTimeout	ported	matching token found in Crystal specs
+vendor/huh/huh_test.go:TestTitleRowRender	vendor/huh/huh_test.go	TestTitleRowRender	missing	no matching Crystal spec token
+vendor/huh/spinner/spinner_test.go:TestNewSpinner	vendor/huh/spinner/spinner_test.go	TestNewSpinner	missing	no matching Crystal spec token
+vendor/huh/spinner/spinner_test.go:TestSpinnerContextCancellation	vendor/huh/spinner/spinner_test.go	TestSpinnerContextCancellation	ported	matching token found in Crystal specs
+vendor/huh/spinner/spinner_test.go:TestSpinnerContextCancellationWhileRunning	vendor/huh/spinner/spinner_test.go	TestSpinnerContextCancellationWhileRunning	missing	no matching Crystal spec token
+vendor/huh/spinner/spinner_test.go:TestSpinnerDifferentTypes	vendor/huh/spinner/spinner_test.go	TestSpinnerDifferentTypes	missing	no matching Crystal spec token
+vendor/huh/spinner/spinner_test.go:TestSpinnerInit	vendor/huh/spinner/spinner_test.go	TestSpinnerInit	missing	no matching Crystal spec token
+vendor/huh/spinner/spinner_test.go:TestSpinnerSimple	vendor/huh/spinner/spinner_test.go	TestSpinnerSimple	missing	no matching Crystal spec token
+vendor/huh/spinner/spinner_test.go:TestSpinnerStyleMethods	vendor/huh/spinner/spinner_test.go	TestSpinnerStyleMethods	missing	no matching Crystal spec token
+vendor/huh/spinner/spinner_test.go:TestSpinnerType	vendor/huh/spinner/spinner_test.go	TestSpinnerType	missing	no matching Crystal spec token
+vendor/huh/spinner/spinner_test.go:TestSpinnerUpdate	vendor/huh/spinner/spinner_test.go	TestSpinnerUpdate	missing	no matching Crystal spec token
+vendor/huh/spinner/spinner_test.go:TestSpinnerView	vendor/huh/spinner/spinner_test.go	TestSpinnerView	missing	no matching Crystal spec token
+vendor/huh/spinner/spinner_test.go:TestSpinnerWithActionError	vendor/huh/spinner/spinner_test.go	TestSpinnerWithActionError	missing	no matching Crystal spec token
+vendor/huh/spinner/spinner_test.go:TestSpinnerWithContextAndAction	vendor/huh/spinner/spinner_test.go	TestSpinnerWithContextAndAction	missing	no matching Crystal spec token

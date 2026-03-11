@@ -28,15 +28,14 @@ Goal: ensure every exported Go API item and Go test has a parity status.
 
 ### 3.1 Parity scripts in this repo
 
-Use the parity scripts under `bin/`:
+Use the generic scripts (with Go wrappers preserved):
 
-- `generate_go_port_inventory.sh`
-- `check_go_port_inventory.sh`
-- `generate_go_source_parity_manifest.sh`
-- `generate_go_test_parity_manifest.sh`
-- `check_go_source_parity.sh`
-- `check_go_test_parity.sh`
-- `generate_bd_issue_commands.sh`
+- Generic: `generate_port_inventory.sh`, `check_port_inventory.sh`
+- Generic: `generate_source_parity_manifest.sh`, `check_source_parity.sh`
+- Generic: `generate_test_parity_manifest.sh`, `check_test_parity.sh`
+- Lifecycle: `ensure_parity_plan.sh`, `verify_parity_adversarial.sh`
+- Backward compatible Go wrappers: `generate_go_*`, `check_go_*`
+- Backlog helper: `generate_bd_issue_commands.sh`
 
 ### 3.2 Generate manifests
 
@@ -44,17 +43,17 @@ Assuming upstream Go source lives under `vendor/huh/` (set exact path):
 
 ```bash
 mkdir -p plans/inventory
-./bin/generate_go_port_inventory.sh . plans/inventory/go_port_inventory.tsv <GO_SOURCE_DIR>
-./bin/generate_go_source_parity_manifest.sh . plans/inventory/go_source_parity.tsv <GO_SOURCE_DIR>
-./bin/generate_go_test_parity_manifest.sh . plans/inventory/go_test_parity.tsv <GO_SOURCE_DIR>
+./bin/generate_port_inventory.sh . plans/inventory/go_port_inventory.tsv <GO_SOURCE_DIR> go auto
+./bin/generate_source_parity_manifest.sh . plans/inventory/go_source_parity.tsv <GO_SOURCE_DIR> go auto
+./bin/generate_test_parity_manifest.sh . plans/inventory/go_test_parity.tsv <GO_SOURCE_DIR> go auto
 ```
 
 ### 3.3 Validate drift continuously
 
 ```bash
-./bin/check_go_port_inventory.sh . plans/inventory/go_port_inventory.tsv <GO_SOURCE_DIR>
-./bin/check_go_source_parity.sh . plans/inventory/go_source_parity.tsv <GO_SOURCE_DIR>
-./bin/check_go_test_parity.sh . plans/inventory/go_test_parity.tsv <GO_SOURCE_DIR>
+./bin/check_port_inventory.sh . plans/inventory/go_port_inventory.tsv <GO_SOURCE_DIR> go auto
+./bin/check_source_parity.sh . plans/inventory/go_source_parity.tsv <GO_SOURCE_DIR> go auto
+./bin/check_test_parity.sh . plans/inventory/go_test_parity.tsv <GO_SOURCE_DIR> go auto
 ```
 
 Pass criteria:
