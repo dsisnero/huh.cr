@@ -2,6 +2,7 @@
 
 EXAMPLE_SOURCES := $(wildcard examples/*.cr)
 EXAMPLE_BINS := $(patsubst examples/%.cr,bin/examples/%,$(EXAMPLE_SOURCES))
+RUMDL ?= rumdl
 
 install:
 	BEADS_DIR=$$(pwd)/.beads shards install
@@ -20,10 +21,10 @@ test:
 	crystal spec
 
 markdown:
-	rumdl fmt .
+	$(RUMDL) fmt .
 
 markdown-check:
-	rumdl check . --check
+	$(RUMDL) check . --check
 
 build-examples: $(EXAMPLE_BINS)
 

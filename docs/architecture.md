@@ -4,7 +4,7 @@ Port of Go huh library to Crystal - interactive forms library for terminal appli
 
 ## Project Structure
 
-```
+```text
 src/
 ├── huh/           # Main library modules
 │   ├── confirm.cr

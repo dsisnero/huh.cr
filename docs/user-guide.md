@@ -29,17 +29,21 @@ puts "Hello, #{name}!" if confirmed
 ## Core Concepts
 
 ### Forms
+
 Forms are the top-level container for your interactive prompts. They organize fields into logical groups.
 
 ### Groups
+
 Groups represent sections or "pages" of a form. Users navigate between groups using Tab/Shift+Tab.
 
 ### Fields
+
 Fields are the individual input components (text inputs, selects, confirms, etc.).
 
 ## Field Types
 
 ### Input
+
 Single-line text input for names, emails, or other short text.
 
 ```crystal
@@ -55,6 +59,7 @@ Huh.new_input
 ```
 
 ### Text
+
 Multi-line text input for longer responses.
 
 ```crystal
@@ -66,6 +71,7 @@ Huh.new_text
 ```
 
 ### Select
+
 Choose a single option from a list.
 
 ```crystal
@@ -80,6 +86,7 @@ Huh.new_select(String)
 ```
 
 ### MultiSelect
+
 Choose multiple options from a list.
 
 ```crystal
@@ -95,6 +102,7 @@ Huh.new_multiselect(String)
 ```
 
 ### Confirm
+
 Yes/No confirmation prompt.
 
 ```crystal
@@ -106,6 +114,7 @@ Huh.new_confirm
 ```
 
 ### Note
+
 Display informational text (non-interactive).
 
 ```crystal

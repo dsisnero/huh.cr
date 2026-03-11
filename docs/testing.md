@@ -76,6 +76,7 @@ end
 ## Golden Files
 
 Golden files in `testdata/go/` are canonical:
+
 - Generated from Go test output
 - Must match exactly for parity verification
 - Update when Go behavior changes (update submodule)

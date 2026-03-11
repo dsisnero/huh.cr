@@ -11,17 +11,20 @@
 ## Setup
 
 1. Clone repository with submodules:
+
    ```bash
    git clone --recurse-submodules https://github.com/dsisnero/huh.git
    cd huh
    ```
 
 2. Install dependencies:
+
    ```bash
    make install
    ```
 
 3. Verify setup:
+
    ```bash
    make test
    ```
@@ -29,6 +32,7 @@
 ## Daily Workflow
 
 1. **Start work session**:
+
    ```bash
    bd ready  # Find unblocked work
    ```
@@ -38,6 +42,7 @@
    - Add corresponding tests in `spec/`
 
 3. **Run quality gates**:
+
    ```bash
    make format
    make lint
@@ -49,6 +54,7 @@
    - Compare with Go golden files in `testdata/go/`
 
 5. **End work session**:
+
    ```bash
    bd sync
    git pull --rebase
