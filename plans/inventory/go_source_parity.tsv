@@ -1,132 +1,132 @@
 id	kind	path	symbol	status	notes
-vendor/huh/accessibility/accessibility.go:PromptBool	func	vendor/huh/accessibility/accessibility.go	PromptBool	ported	symbol match found in Crystal source/spec
-vendor/huh/accessibility/accessibility.go:PromptInt	func	vendor/huh/accessibility/accessibility.go	PromptInt	ported	symbol match found in Crystal source/spec
-vendor/huh/accessibility/accessibility.go:PromptString	func	vendor/huh/accessibility/accessibility.go	PromptString	ported	symbol match found in Crystal source/spec
-vendor/huh/accessor.go:Accessor	type	vendor/huh/accessor.go	Accessor	ported	symbol match found in Crystal source/spec
-vendor/huh/accessor.go:EmbeddedAccessor	type	vendor/huh/accessor.go	EmbeddedAccessor	ported	symbol match found in Crystal source/spec
-vendor/huh/accessor.go:NewPointerAccessor	func	vendor/huh/accessor.go	NewPointerAccessor	missing	no symbol match in src/spec
-vendor/huh/accessor.go:PointerAccessor	type	vendor/huh/accessor.go	PointerAccessor	ported	symbol match found in Crystal source/spec
-vendor/huh/eval.go:Eval	type	vendor/huh/eval.go	Eval	ported	symbol match found in Crystal source/spec
-vendor/huh/examples/bubbletea/main.go:Model	type	vendor/huh/examples/bubbletea/main.go	Model	ported	symbol match found in Crystal source/spec
-vendor/huh/examples/bubbletea/main.go:NewModel	func	vendor/huh/examples/bubbletea/main.go	NewModel	missing	no symbol match in src/spec
-vendor/huh/examples/bubbletea/main.go:NewStyles	func	vendor/huh/examples/bubbletea/main.go	NewStyles	missing	no symbol match in src/spec
-vendor/huh/examples/bubbletea/main.go:Styles	type	vendor/huh/examples/bubbletea/main.go	Styles	ported	symbol match found in Crystal source/spec
-vendor/huh/examples/burger/main.go:Burger	type	vendor/huh/examples/burger/main.go	Burger	missing	no symbol match in src/spec
-vendor/huh/examples/burger/main.go:Order	type	vendor/huh/examples/burger/main.go	Order	missing	no symbol match in src/spec
-vendor/huh/examples/burger/main.go:Spice	type	vendor/huh/examples/burger/main.go	Spice	missing	no symbol match in src/spec
-vendor/huh/examples/dynamic/dynamic-bubbletea/main.go:Model	type	vendor/huh/examples/dynamic/dynamic-bubbletea/main.go	Model	ported	symbol match found in Crystal source/spec
-vendor/huh/examples/dynamic/dynamic-bubbletea/main.go:NewModel	func	vendor/huh/examples/dynamic/dynamic-bubbletea/main.go	NewModel	missing	no symbol match in src/spec
-vendor/huh/examples/dynamic/dynamic-bubbletea/main.go:NewStyles	func	vendor/huh/examples/dynamic/dynamic-bubbletea/main.go	NewStyles	missing	no symbol match in src/spec
-vendor/huh/examples/dynamic/dynamic-bubbletea/main.go:Styles	type	vendor/huh/examples/dynamic/dynamic-bubbletea/main.go	Styles	ported	symbol match found in Crystal source/spec
-vendor/huh/examples/gh/create.go:Action	type	vendor/huh/examples/gh/create.go	Action	ported	symbol match found in Crystal source/spec
-vendor/huh/examples/readme/select/scroll/scroll.go:Pokemon	type	vendor/huh/examples/readme/select/scroll/scroll.go	Pokemon	missing	no symbol match in src/spec
-vendor/huh/examples/timer/main.go:Model	type	vendor/huh/examples/timer/main.go	Model	ported	symbol match found in Crystal source/spec
-vendor/huh/examples/timer/main.go:NewModel	func	vendor/huh/examples/timer/main.go	NewModel	missing	no symbol match in src/spec
-vendor/huh/field_confirm.go:Confirm	type	vendor/huh/field_confirm.go	Confirm	ported	symbol match found in Crystal source/spec
-vendor/huh/field_confirm.go:NewConfirm	func	vendor/huh/field_confirm.go	NewConfirm	missing	no symbol match in src/spec
-vendor/huh/field_filepicker.go:FilePicker	type	vendor/huh/field_filepicker.go	FilePicker	ported	symbol match found in Crystal source/spec
-vendor/huh/field_filepicker.go:NewFilePicker	func	vendor/huh/field_filepicker.go	NewFilePicker	missing	no symbol match in src/spec
-vendor/huh/field_input.go:EchoMode	type	vendor/huh/field_input.go	EchoMode	ported	symbol match found in Crystal source/spec
-vendor/huh/field_input.go:Input	type	vendor/huh/field_input.go	Input	ported	symbol match found in Crystal source/spec
-vendor/huh/field_input.go:NewInput	func	vendor/huh/field_input.go	NewInput	missing	no symbol match in src/spec
-vendor/huh/field_multiselect.go:MultiSelect	type	vendor/huh/field_multiselect.go	MultiSelect	ported	symbol match found in Crystal source/spec
-vendor/huh/field_multiselect.go:NewMultiSelect	func	vendor/huh/field_multiselect.go	NewMultiSelect	missing	no symbol match in src/spec
-vendor/huh/field_note.go:NewNote	func	vendor/huh/field_note.go	NewNote	missing	no symbol match in src/spec
-vendor/huh/field_note.go:Note	type	vendor/huh/field_note.go	Note	ported	symbol match found in Crystal source/spec
-vendor/huh/field_select.go:NewSelect	func	vendor/huh/field_select.go	NewSelect	missing	no symbol match in src/spec
-vendor/huh/field_select.go:Select	type	vendor/huh/field_select.go	Select	ported	symbol match found in Crystal source/spec
-vendor/huh/field_text.go:NewText	func	vendor/huh/field_text.go	NewText	missing	no symbol match in src/spec
-vendor/huh/field_text.go:Text	type	vendor/huh/field_text.go	Text	ported	symbol match found in Crystal source/spec
-vendor/huh/form.go:ErrTimeout	var	vendor/huh/form.go	ErrTimeout	missing	no symbol match in src/spec
-vendor/huh/form.go:ErrTimeoutUnsupported	var	vendor/huh/form.go	ErrTimeoutUnsupported	missing	no symbol match in src/spec
-vendor/huh/form.go:ErrUserAborted	var	vendor/huh/form.go	ErrUserAborted	missing	no symbol match in src/spec
-vendor/huh/form.go:Field	type	vendor/huh/form.go	Field	ported	symbol match found in Crystal source/spec
-vendor/huh/form.go:FieldPosition	type	vendor/huh/form.go	FieldPosition	ported	symbol match found in Crystal source/spec
-vendor/huh/form.go:Form	type	vendor/huh/form.go	Form	ported	symbol match found in Crystal source/spec
-vendor/huh/form.go:FormState	type	vendor/huh/form.go	FormState	missing	no symbol match in src/spec
-vendor/huh/form.go:NewForm	func	vendor/huh/form.go	NewForm	missing	no symbol match in src/spec
-vendor/huh/group.go:Group	type	vendor/huh/group.go	Group	ported	symbol match found in Crystal source/spec
-vendor/huh/group.go:NewGroup	func	vendor/huh/group.go	NewGroup	missing	no symbol match in src/spec
-vendor/huh/group.go:NextField	func	vendor/huh/group.go	NextField	missing	no symbol match in src/spec
-vendor/huh/group.go:PrevField	func	vendor/huh/group.go	PrevField	missing	no symbol match in src/spec
-vendor/huh/huh_test.go:TestAbort	func	vendor/huh/huh_test.go	TestAbort	ported	symbol match found in Crystal source/spec
-vendor/huh/huh_test.go:TestAccessibleFields	func	vendor/huh/huh_test.go	TestAccessibleFields	missing	no symbol match in src/spec
-vendor/huh/huh_test.go:TestAccessibleForm	func	vendor/huh/huh_test.go	TestAccessibleForm	missing	no symbol match in src/spec
-vendor/huh/huh_test.go:TestConfirm	func	vendor/huh/huh_test.go	TestConfirm	ported	symbol match found in Crystal source/spec
-vendor/huh/huh_test.go:TestDescriptionRowRender	func	vendor/huh/huh_test.go	TestDescriptionRowRender	missing	no symbol match in src/spec
-vendor/huh/huh_test.go:TestDynamicHelp	func	vendor/huh/huh_test.go	TestDynamicHelp	ported	symbol match found in Crystal source/spec
-vendor/huh/huh_test.go:TestFile	func	vendor/huh/huh_test.go	TestFile	ported	symbol match found in Crystal source/spec
-vendor/huh/huh_test.go:TestForm	func	vendor/huh/huh_test.go	TestForm	ported	symbol match found in Crystal source/spec
-vendor/huh/huh_test.go:TestGetFocusedField	func	vendor/huh/huh_test.go	TestGetFocusedField	missing	no symbol match in src/spec
-vendor/huh/huh_test.go:TestHideGroup	func	vendor/huh/huh_test.go	TestHideGroup	ported	symbol match found in Crystal source/spec
-vendor/huh/huh_test.go:TestHideGroupLastAndFirstGroupsNotHidden	func	vendor/huh/huh_test.go	TestHideGroupLastAndFirstGroupsNotHidden	ported	symbol match found in Crystal source/spec
-vendor/huh/huh_test.go:TestInlineInput	func	vendor/huh/huh_test.go	TestInlineInput	ported	symbol match found in Crystal source/spec
-vendor/huh/huh_test.go:TestInput	func	vendor/huh/huh_test.go	TestInput	ported	symbol match found in Crystal source/spec
-vendor/huh/huh_test.go:TestInputPasswordAccessible	func	vendor/huh/huh_test.go	TestInputPasswordAccessible	missing	no symbol match in src/spec
-vendor/huh/huh_test.go:TestMultiSelect	func	vendor/huh/huh_test.go	TestMultiSelect	ported	symbol match found in Crystal source/spec
-vendor/huh/huh_test.go:TestMultiSelectFiltering	func	vendor/huh/huh_test.go	TestMultiSelectFiltering	ported	symbol match found in Crystal source/spec
-vendor/huh/huh_test.go:TestNoTitleOrDescription	func	vendor/huh/huh_test.go	TestNoTitleOrDescription	missing	no symbol match in src/spec
-vendor/huh/huh_test.go:TestNote	func	vendor/huh/huh_test.go	TestNote	ported	symbol match found in Crystal source/spec
-vendor/huh/huh_test.go:TestPrevGroup	func	vendor/huh/huh_test.go	TestPrevGroup	ported	symbol match found in Crystal source/spec
-vendor/huh/huh_test.go:TestSelect	func	vendor/huh/huh_test.go	TestSelect	ported	symbol match found in Crystal source/spec
-vendor/huh/huh_test.go:TestSelectDynamic	func	vendor/huh/huh_test.go	TestSelectDynamic	missing	no symbol match in src/spec
-vendor/huh/huh_test.go:TestSelectPageNavigation	func	vendor/huh/huh_test.go	TestSelectPageNavigation	ported	symbol match found in Crystal source/spec
-vendor/huh/huh_test.go:TestSkip	func	vendor/huh/huh_test.go	TestSkip	ported	symbol match found in Crystal source/spec
-vendor/huh/huh_test.go:TestText	func	vendor/huh/huh_test.go	TestText	ported	symbol match found in Crystal source/spec
-vendor/huh/huh_test.go:TestTextExternalEditorHidden	func	vendor/huh/huh_test.go	TestTextExternalEditorHidden	missing	no symbol match in src/spec
-vendor/huh/huh_test.go:TestTimeout	func	vendor/huh/huh_test.go	TestTimeout	ported	symbol match found in Crystal source/spec
-vendor/huh/huh_test.go:TestTitleRowRender	func	vendor/huh/huh_test.go	TestTitleRowRender	missing	no symbol match in src/spec
-vendor/huh/internal/accessibility/accessibility.go:PromptBool	func	vendor/huh/internal/accessibility/accessibility.go	PromptBool	ported	symbol match found in Crystal source/spec
-vendor/huh/internal/accessibility/accessibility.go:PromptInt	func	vendor/huh/internal/accessibility/accessibility.go	PromptInt	ported	symbol match found in Crystal source/spec
-vendor/huh/internal/accessibility/accessibility.go:PromptPassword	func	vendor/huh/internal/accessibility/accessibility.go	PromptPassword	missing	no symbol match in src/spec
-vendor/huh/internal/accessibility/accessibility.go:PromptString	func	vendor/huh/internal/accessibility/accessibility.go	PromptString	ported	symbol match found in Crystal source/spec
-vendor/huh/internal/selector/selector.go:NewSelector	func	vendor/huh/internal/selector/selector.go	NewSelector	missing	no symbol match in src/spec
-vendor/huh/internal/selector/selector.go:Selector	type	vendor/huh/internal/selector/selector.go	Selector	ported	symbol match found in Crystal source/spec
-vendor/huh/keymap.go:ConfirmKeyMap	type	vendor/huh/keymap.go	ConfirmKeyMap	ported	symbol match found in Crystal source/spec
-vendor/huh/keymap.go:FilePickerKeyMap	type	vendor/huh/keymap.go	FilePickerKeyMap	ported	symbol match found in Crystal source/spec
-vendor/huh/keymap.go:InputKeyMap	type	vendor/huh/keymap.go	InputKeyMap	ported	symbol match found in Crystal source/spec
-vendor/huh/keymap.go:KeyMap	type	vendor/huh/keymap.go	KeyMap	ported	symbol match found in Crystal source/spec
-vendor/huh/keymap.go:MultiSelectKeyMap	type	vendor/huh/keymap.go	MultiSelectKeyMap	ported	symbol match found in Crystal source/spec
-vendor/huh/keymap.go:NewDefaultKeyMap	func	vendor/huh/keymap.go	NewDefaultKeyMap	ported	symbol match found in Crystal source/spec
-vendor/huh/keymap.go:NoteKeyMap	type	vendor/huh/keymap.go	NoteKeyMap	ported	symbol match found in Crystal source/spec
-vendor/huh/keymap.go:SelectKeyMap	type	vendor/huh/keymap.go	SelectKeyMap	ported	symbol match found in Crystal source/spec
-vendor/huh/keymap.go:TextKeyMap	type	vendor/huh/keymap.go	TextKeyMap	ported	symbol match found in Crystal source/spec
-vendor/huh/layout.go:Layout	type	vendor/huh/layout.go	Layout	ported	symbol match found in Crystal source/spec
-vendor/huh/layout.go:LayoutColumns	func	vendor/huh/layout.go	LayoutColumns	ported	symbol match found in Crystal source/spec
-vendor/huh/layout.go:LayoutDefault	var	vendor/huh/layout.go	LayoutDefault	ported	symbol match found in Crystal source/spec
-vendor/huh/layout.go:LayoutGrid	func	vendor/huh/layout.go	LayoutGrid	ported	symbol match found in Crystal source/spec
-vendor/huh/layout.go:LayoutStack	var	vendor/huh/layout.go	LayoutStack	ported	symbol match found in Crystal source/spec
-vendor/huh/option.go:NewOption	func	vendor/huh/option.go	NewOption	ported	symbol match found in Crystal source/spec
-vendor/huh/option.go:NewOptions	func	vendor/huh/option.go	NewOptions	ported	symbol match found in Crystal source/spec
-vendor/huh/option.go:Option	type	vendor/huh/option.go	Option	ported	symbol match found in Crystal source/spec
-vendor/huh/run.go:Run	func	vendor/huh/run.go	Run	ported	symbol match found in Crystal source/spec
-vendor/huh/spinner/spinner.go:New	func	vendor/huh/spinner/spinner.go	New	ported	symbol match found in Crystal source/spec
-vendor/huh/spinner/spinner.go:Spinner	type	vendor/huh/spinner/spinner.go	Spinner	ported	symbol match found in Crystal source/spec
-vendor/huh/spinner/spinner.go:Type	type	vendor/huh/spinner/spinner.go	Type	ported	symbol match found in Crystal source/spec
-vendor/huh/spinner/spinner_test.go:TestNewSpinner	func	vendor/huh/spinner/spinner_test.go	TestNewSpinner	missing	no symbol match in src/spec
-vendor/huh/spinner/spinner_test.go:TestSpinnerContextCancellation	func	vendor/huh/spinner/spinner_test.go	TestSpinnerContextCancellation	ported	symbol match found in Crystal source/spec
-vendor/huh/spinner/spinner_test.go:TestSpinnerContextCancellationWhileRunning	func	vendor/huh/spinner/spinner_test.go	TestSpinnerContextCancellationWhileRunning	missing	no symbol match in src/spec
-vendor/huh/spinner/spinner_test.go:TestSpinnerDifferentTypes	func	vendor/huh/spinner/spinner_test.go	TestSpinnerDifferentTypes	missing	no symbol match in src/spec
-vendor/huh/spinner/spinner_test.go:TestSpinnerInit	func	vendor/huh/spinner/spinner_test.go	TestSpinnerInit	missing	no symbol match in src/spec
-vendor/huh/spinner/spinner_test.go:TestSpinnerSimple	func	vendor/huh/spinner/spinner_test.go	TestSpinnerSimple	missing	no symbol match in src/spec
-vendor/huh/spinner/spinner_test.go:TestSpinnerStyleMethods	func	vendor/huh/spinner/spinner_test.go	TestSpinnerStyleMethods	missing	no symbol match in src/spec
-vendor/huh/spinner/spinner_test.go:TestSpinnerType	func	vendor/huh/spinner/spinner_test.go	TestSpinnerType	missing	no symbol match in src/spec
-vendor/huh/spinner/spinner_test.go:TestSpinnerUpdate	func	vendor/huh/spinner/spinner_test.go	TestSpinnerUpdate	missing	no symbol match in src/spec
-vendor/huh/spinner/spinner_test.go:TestSpinnerView	func	vendor/huh/spinner/spinner_test.go	TestSpinnerView	missing	no symbol match in src/spec
-vendor/huh/spinner/spinner_test.go:TestSpinnerWithActionError	func	vendor/huh/spinner/spinner_test.go	TestSpinnerWithActionError	missing	no symbol match in src/spec
-vendor/huh/spinner/spinner_test.go:TestSpinnerWithContextAndAction	func	vendor/huh/spinner/spinner_test.go	TestSpinnerWithContextAndAction	missing	no symbol match in src/spec
-vendor/huh/theme.go:FieldStyles	type	vendor/huh/theme.go	FieldStyles	ported	symbol match found in Crystal source/spec
-vendor/huh/theme.go:FormStyles	type	vendor/huh/theme.go	FormStyles	ported	symbol match found in Crystal source/spec
-vendor/huh/theme.go:GroupStyles	type	vendor/huh/theme.go	GroupStyles	ported	symbol match found in Crystal source/spec
-vendor/huh/theme.go:TextInputStyles	type	vendor/huh/theme.go	TextInputStyles	ported	symbol match found in Crystal source/spec
-vendor/huh/theme.go:Theme	type	vendor/huh/theme.go	Theme	ported	symbol match found in Crystal source/spec
-vendor/huh/theme.go:ThemeBase	func	vendor/huh/theme.go	ThemeBase	missing	no symbol match in src/spec
-vendor/huh/theme.go:ThemeBase16	func	vendor/huh/theme.go	ThemeBase16	missing	no symbol match in src/spec
-vendor/huh/theme.go:ThemeCatppuccin	func	vendor/huh/theme.go	ThemeCatppuccin	missing	no symbol match in src/spec
-vendor/huh/theme.go:ThemeCharm	func	vendor/huh/theme.go	ThemeCharm	missing	no symbol match in src/spec
-vendor/huh/theme.go:ThemeDracula	func	vendor/huh/theme.go	ThemeDracula	missing	no symbol match in src/spec
-vendor/huh/validate.go:ValidateLength	func	vendor/huh/validate.go	ValidateLength	missing	no symbol match in src/spec
-vendor/huh/validate.go:ValidateMaxLength	func	vendor/huh/validate.go	ValidateMaxLength	missing	no symbol match in src/spec
-vendor/huh/validate.go:ValidateMinLength	func	vendor/huh/validate.go	ValidateMinLength	missing	no symbol match in src/spec
-vendor/huh/validate.go:ValidateNotEmpty	func	vendor/huh/validate.go	ValidateNotEmpty	missing	no symbol match in src/spec
-vendor/huh/validate.go:ValidateOneOf	func	vendor/huh/validate.go	ValidateOneOf	missing	no symbol match in src/spec
+vendor/huh/accessibility/accessibility.go:PromptBool	func	vendor/huh/accessibility/accessibility.go	PromptBool	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/accessibility/accessibility.go:PromptInt	func	vendor/huh/accessibility/accessibility.go	PromptInt	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/accessibility/accessibility.go:PromptString	func	vendor/huh/accessibility/accessibility.go	PromptString	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/accessor.go:Accessor	type	vendor/huh/accessor.go	Accessor	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/accessor.go:EmbeddedAccessor	type	vendor/huh/accessor.go	EmbeddedAccessor	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/accessor.go:NewPointerAccessor	func	vendor/huh/accessor.go	NewPointerAccessor	ported	idiomatic Crystal match via Huh.cell + PointerAccessor (ref renamed to cell)
+vendor/huh/accessor.go:PointerAccessor	type	vendor/huh/accessor.go	PointerAccessor	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/eval.go:Eval	type	vendor/huh/eval.go	Eval	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/examples/bubbletea/main.go:Model	type	vendor/huh/examples/bubbletea/main.go	Model	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/examples/bubbletea/main.go:NewModel	func	vendor/huh/examples/bubbletea/main.go	NewModel	ported	idiomatic Crystal match found via Model
+vendor/huh/examples/bubbletea/main.go:NewStyles	func	vendor/huh/examples/bubbletea/main.go	NewStyles	ported	idiomatic Crystal match found via Styles
+vendor/huh/examples/bubbletea/main.go:Styles	type	vendor/huh/examples/bubbletea/main.go	Styles	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/examples/burger/main.go:Burger	type	vendor/huh/examples/burger/main.go	Burger	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/examples/burger/main.go:Order	type	vendor/huh/examples/burger/main.go	Order	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/examples/burger/main.go:Spice	type	vendor/huh/examples/burger/main.go	Spice	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/examples/dynamic/dynamic-bubbletea/main.go:Model	type	vendor/huh/examples/dynamic/dynamic-bubbletea/main.go	Model	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/examples/dynamic/dynamic-bubbletea/main.go:NewModel	func	vendor/huh/examples/dynamic/dynamic-bubbletea/main.go	NewModel	ported	idiomatic Crystal match found via Model
+vendor/huh/examples/dynamic/dynamic-bubbletea/main.go:NewStyles	func	vendor/huh/examples/dynamic/dynamic-bubbletea/main.go	NewStyles	ported	idiomatic Crystal match found via Styles
+vendor/huh/examples/dynamic/dynamic-bubbletea/main.go:Styles	type	vendor/huh/examples/dynamic/dynamic-bubbletea/main.go	Styles	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/examples/gh/create.go:Action	type	vendor/huh/examples/gh/create.go	Action	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/examples/readme/select/scroll/scroll.go:Pokemon	type	vendor/huh/examples/readme/select/scroll/scroll.go	Pokemon	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/examples/timer/main.go:Model	type	vendor/huh/examples/timer/main.go	Model	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/examples/timer/main.go:NewModel	func	vendor/huh/examples/timer/main.go	NewModel	ported	idiomatic Crystal match found via Model
+vendor/huh/field_confirm.go:Confirm	type	vendor/huh/field_confirm.go	Confirm	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/field_confirm.go:NewConfirm	func	vendor/huh/field_confirm.go	NewConfirm	ported	idiomatic Crystal match found via new_confirm
+vendor/huh/field_filepicker.go:FilePicker	type	vendor/huh/field_filepicker.go	FilePicker	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/field_filepicker.go:NewFilePicker	func	vendor/huh/field_filepicker.go	NewFilePicker	ported	idiomatic Crystal match found via FilePicker
+vendor/huh/field_input.go:EchoMode	type	vendor/huh/field_input.go	EchoMode	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/field_input.go:Input	type	vendor/huh/field_input.go	Input	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/field_input.go:NewInput	func	vendor/huh/field_input.go	NewInput	ported	idiomatic Crystal match found via new_input
+vendor/huh/field_multiselect.go:MultiSelect	type	vendor/huh/field_multiselect.go	MultiSelect	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/field_multiselect.go:NewMultiSelect	func	vendor/huh/field_multiselect.go	NewMultiSelect	ported	idiomatic Crystal match found via MultiSelect
+vendor/huh/field_note.go:NewNote	func	vendor/huh/field_note.go	NewNote	ported	idiomatic Crystal match found via new_note
+vendor/huh/field_note.go:Note	type	vendor/huh/field_note.go	Note	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/field_select.go:NewSelect	func	vendor/huh/field_select.go	NewSelect	ported	idiomatic Crystal match found via new_select
+vendor/huh/field_select.go:Select	type	vendor/huh/field_select.go	Select	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/field_text.go:NewText	func	vendor/huh/field_text.go	NewText	ported	idiomatic Crystal match found via new_text
+vendor/huh/field_text.go:Text	type	vendor/huh/field_text.go	Text	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/form.go:ErrTimeout	var	vendor/huh/form.go	ErrTimeout	ported	idiomatic Crystal match found via TimeoutError
+vendor/huh/form.go:ErrTimeoutUnsupported	var	vendor/huh/form.go	ErrTimeoutUnsupported	ported	idiomatic Crystal match found via TimeoutUnsupportedError
+vendor/huh/form.go:ErrUserAborted	var	vendor/huh/form.go	ErrUserAborted	ported	idiomatic Crystal match found via UserAbortedError
+vendor/huh/form.go:Field	type	vendor/huh/form.go	Field	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/form.go:FieldPosition	type	vendor/huh/form.go	FieldPosition	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/form.go:Form	type	vendor/huh/form.go	Form	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/form.go:FormState	type	vendor/huh/form.go	FormState	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/form.go:NewForm	func	vendor/huh/form.go	NewForm	ported	idiomatic Crystal match found via new_form
+vendor/huh/group.go:Group	type	vendor/huh/group.go	Group	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/group.go:NewGroup	func	vendor/huh/group.go	NewGroup	ported	idiomatic Crystal match found via new_group
+vendor/huh/group.go:NextField	func	vendor/huh/group.go	NextField	ported	idiomatic Crystal match found via next_field
+vendor/huh/group.go:PrevField	func	vendor/huh/group.go	PrevField	ported	idiomatic Crystal match found via prev_field
+vendor/huh/huh_test.go:TestAbort	func	vendor/huh/huh_test.go	TestAbort	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/huh_test.go:TestAccessibleFields	func	vendor/huh/huh_test.go	TestAccessibleFields	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/huh_test.go:TestAccessibleForm	func	vendor/huh/huh_test.go	TestAccessibleForm	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/huh_test.go:TestConfirm	func	vendor/huh/huh_test.go	TestConfirm	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/huh_test.go:TestDescriptionRowRender	func	vendor/huh/huh_test.go	TestDescriptionRowRender	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/huh_test.go:TestDynamicHelp	func	vendor/huh/huh_test.go	TestDynamicHelp	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/huh_test.go:TestFile	func	vendor/huh/huh_test.go	TestFile	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/huh_test.go:TestForm	func	vendor/huh/huh_test.go	TestForm	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/huh_test.go:TestGetFocusedField	func	vendor/huh/huh_test.go	TestGetFocusedField	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/huh_test.go:TestHideGroup	func	vendor/huh/huh_test.go	TestHideGroup	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/huh_test.go:TestHideGroupLastAndFirstGroupsNotHidden	func	vendor/huh/huh_test.go	TestHideGroupLastAndFirstGroupsNotHidden	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/huh_test.go:TestInlineInput	func	vendor/huh/huh_test.go	TestInlineInput	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/huh_test.go:TestInput	func	vendor/huh/huh_test.go	TestInput	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/huh_test.go:TestInputPasswordAccessible	func	vendor/huh/huh_test.go	TestInputPasswordAccessible	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/huh_test.go:TestMultiSelect	func	vendor/huh/huh_test.go	TestMultiSelect	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/huh_test.go:TestMultiSelectFiltering	func	vendor/huh/huh_test.go	TestMultiSelectFiltering	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/huh_test.go:TestNoTitleOrDescription	func	vendor/huh/huh_test.go	TestNoTitleOrDescription	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/huh_test.go:TestNote	func	vendor/huh/huh_test.go	TestNote	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/huh_test.go:TestPrevGroup	func	vendor/huh/huh_test.go	TestPrevGroup	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/huh_test.go:TestSelect	func	vendor/huh/huh_test.go	TestSelect	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/huh_test.go:TestSelectDynamic	func	vendor/huh/huh_test.go	TestSelectDynamic	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/huh_test.go:TestSelectPageNavigation	func	vendor/huh/huh_test.go	TestSelectPageNavigation	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/huh_test.go:TestSkip	func	vendor/huh/huh_test.go	TestSkip	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/huh_test.go:TestText	func	vendor/huh/huh_test.go	TestText	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/huh_test.go:TestTextExternalEditorHidden	func	vendor/huh/huh_test.go	TestTextExternalEditorHidden	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/huh_test.go:TestTimeout	func	vendor/huh/huh_test.go	TestTimeout	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/huh_test.go:TestTitleRowRender	func	vendor/huh/huh_test.go	TestTitleRowRender	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/internal/accessibility/accessibility.go:PromptBool	func	vendor/huh/internal/accessibility/accessibility.go	PromptBool	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/internal/accessibility/accessibility.go:PromptInt	func	vendor/huh/internal/accessibility/accessibility.go	PromptInt	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/internal/accessibility/accessibility.go:PromptPassword	func	vendor/huh/internal/accessibility/accessibility.go	PromptPassword	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/internal/accessibility/accessibility.go:PromptString	func	vendor/huh/internal/accessibility/accessibility.go	PromptString	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/internal/selector/selector.go:NewSelector	func	vendor/huh/internal/selector/selector.go	NewSelector	ported	idiomatic Crystal match found via Selector
+vendor/huh/internal/selector/selector.go:Selector	type	vendor/huh/internal/selector/selector.go	Selector	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/keymap.go:ConfirmKeyMap	type	vendor/huh/keymap.go	ConfirmKeyMap	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/keymap.go:FilePickerKeyMap	type	vendor/huh/keymap.go	FilePickerKeyMap	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/keymap.go:InputKeyMap	type	vendor/huh/keymap.go	InputKeyMap	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/keymap.go:KeyMap	type	vendor/huh/keymap.go	KeyMap	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/keymap.go:MultiSelectKeyMap	type	vendor/huh/keymap.go	MultiSelectKeyMap	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/keymap.go:NewDefaultKeyMap	func	vendor/huh/keymap.go	NewDefaultKeyMap	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/keymap.go:NoteKeyMap	type	vendor/huh/keymap.go	NoteKeyMap	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/keymap.go:SelectKeyMap	type	vendor/huh/keymap.go	SelectKeyMap	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/keymap.go:TextKeyMap	type	vendor/huh/keymap.go	TextKeyMap	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/layout.go:Layout	type	vendor/huh/layout.go	Layout	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/layout.go:LayoutColumns	func	vendor/huh/layout.go	LayoutColumns	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/layout.go:LayoutDefault	var	vendor/huh/layout.go	LayoutDefault	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/layout.go:LayoutGrid	func	vendor/huh/layout.go	LayoutGrid	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/layout.go:LayoutStack	var	vendor/huh/layout.go	LayoutStack	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/option.go:NewOption	func	vendor/huh/option.go	NewOption	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/option.go:NewOptions	func	vendor/huh/option.go	NewOptions	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/option.go:Option	type	vendor/huh/option.go	Option	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/run.go:Run	func	vendor/huh/run.go	Run	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/spinner/spinner.go:New	func	vendor/huh/spinner/spinner.go	New	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/spinner/spinner.go:Spinner	type	vendor/huh/spinner/spinner.go	Spinner	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/spinner/spinner.go:Type	type	vendor/huh/spinner/spinner.go	Type	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/spinner/spinner_test.go:TestNewSpinner	func	vendor/huh/spinner/spinner_test.go	TestNewSpinner	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/spinner/spinner_test.go:TestSpinnerContextCancellation	func	vendor/huh/spinner/spinner_test.go	TestSpinnerContextCancellation	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/spinner/spinner_test.go:TestSpinnerContextCancellationWhileRunning	func	vendor/huh/spinner/spinner_test.go	TestSpinnerContextCancellationWhileRunning	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/spinner/spinner_test.go:TestSpinnerDifferentTypes	func	vendor/huh/spinner/spinner_test.go	TestSpinnerDifferentTypes	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/spinner/spinner_test.go:TestSpinnerInit	func	vendor/huh/spinner/spinner_test.go	TestSpinnerInit	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/spinner/spinner_test.go:TestSpinnerSimple	func	vendor/huh/spinner/spinner_test.go	TestSpinnerSimple	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/spinner/spinner_test.go:TestSpinnerStyleMethods	func	vendor/huh/spinner/spinner_test.go	TestSpinnerStyleMethods	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/spinner/spinner_test.go:TestSpinnerType	func	vendor/huh/spinner/spinner_test.go	TestSpinnerType	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/spinner/spinner_test.go:TestSpinnerUpdate	func	vendor/huh/spinner/spinner_test.go	TestSpinnerUpdate	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/spinner/spinner_test.go:TestSpinnerView	func	vendor/huh/spinner/spinner_test.go	TestSpinnerView	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/spinner/spinner_test.go:TestSpinnerWithActionError	func	vendor/huh/spinner/spinner_test.go	TestSpinnerWithActionError	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/spinner/spinner_test.go:TestSpinnerWithContextAndAction	func	vendor/huh/spinner/spinner_test.go	TestSpinnerWithContextAndAction	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/theme.go:FieldStyles	type	vendor/huh/theme.go	FieldStyles	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/theme.go:FormStyles	type	vendor/huh/theme.go	FormStyles	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/theme.go:GroupStyles	type	vendor/huh/theme.go	GroupStyles	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/theme.go:TextInputStyles	type	vendor/huh/theme.go	TextInputStyles	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/theme.go:Theme	type	vendor/huh/theme.go	Theme	ported	symbol match found in Crystal source/spec/examples
+vendor/huh/theme.go:ThemeBase	func	vendor/huh/theme.go	ThemeBase	ported	idiomatic Crystal match found via theme_base
+vendor/huh/theme.go:ThemeBase16	func	vendor/huh/theme.go	ThemeBase16	ported	idiomatic Crystal match found via theme_base16
+vendor/huh/theme.go:ThemeCatppuccin	func	vendor/huh/theme.go	ThemeCatppuccin	ported	idiomatic Crystal match found via theme_catppuccin
+vendor/huh/theme.go:ThemeCharm	func	vendor/huh/theme.go	ThemeCharm	ported	idiomatic Crystal match found via theme_charm
+vendor/huh/theme.go:ThemeDracula	func	vendor/huh/theme.go	ThemeDracula	ported	idiomatic Crystal match found via theme_dracula
+vendor/huh/validate.go:ValidateLength	func	vendor/huh/validate.go	ValidateLength	ported	idiomatic Crystal match found via validate_length
+vendor/huh/validate.go:ValidateMaxLength	func	vendor/huh/validate.go	ValidateMaxLength	ported	idiomatic Crystal match found via validate_max_length
+vendor/huh/validate.go:ValidateMinLength	func	vendor/huh/validate.go	ValidateMinLength	ported	idiomatic Crystal match found via validate_min_length
+vendor/huh/validate.go:ValidateNotEmpty	func	vendor/huh/validate.go	ValidateNotEmpty	ported	idiomatic Crystal match found via validate_not_empty
+vendor/huh/validate.go:ValidateOneOf	func	vendor/huh/validate.go	ValidateOneOf	ported	idiomatic Crystal match found via validate_one_of
